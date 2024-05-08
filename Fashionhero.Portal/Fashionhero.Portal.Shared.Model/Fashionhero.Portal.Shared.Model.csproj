@@ -12,4 +12,8 @@
     <Folder Include="Searchable\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fashionhero.Portal.Shared.Abstraction\Fashionhero.Portal.Shared.Abstraction.csproj" />
+  </ItemGroup>
+
 </Project>
