@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.Shared.Abstraction", "Fashionhero.Portal.Shared.Abstraction\Fashionhero.Portal.Shared.Abstraction.csproj", "{89ECEF6C-F8CC-462B-8FC0-6065E20DA96A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.Shared.Models", "Fashionhero.Portal.Shared.Models\Fashionhero.Portal.Shared.Models.csproj", "{63F08DF1-6E0B-4ECB-9CAB-17E2BAD896DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.Shared.Model", "Fashionhero.Portal.Shared.Model\Fashionhero.Portal.Shared.Model.csproj", "{63F08DF1-6E0B-4ECB-9CAB-17E2BAD896DD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.BusinessLogic", "Fashionhero.Portal.BusinessLogic\Fashionhero.Portal.BusinessLogic.csproj", "{B25604C5-49CC-4014-953C-B89C8C55D541}"
 EndProject
@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.DataAcce
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.Presentation", "Fashionhero.Portal.Presentation\Fashionhero.Portal.Presentation.csproj", "{747BC228-E839-44C8-A459-65D628CA1FA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fashionhero.Portal.BusinessLogic.Test", "Fashionhero.Portal.BusinessLogic.Test\Fashionhero.Portal.BusinessLogic.Test.csproj", "{AAF8F9CE-3553-4F72-ADCE-74E4F0C27550}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.BusinessLogic.Test", "Fashionhero.Portal.BusinessLogic.Test\Fashionhero.Portal.BusinessLogic.Test.csproj", "{AAF8F9CE-3553-4F72-ADCE-74E4F0C27550}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fashionhero.Portal.DataAccess.Test", "Fashionhero.Portal.DataAccess.Test\Fashionhero.Portal.DataAccess.Test.csproj", "{FEF22DC8-1BA7-4E8C-9410-4A09323EA974}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fashionhero.Portal.DataAccess.Test", "Fashionhero.Portal.DataAccess.Test\Fashionhero.Portal.DataAccess.Test.csproj", "{FEF22DC8-1BA7-4E8C-9410-4A09323EA974}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
