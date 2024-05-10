@@ -7,9 +7,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public Price(int id, Product product)
+        public Price(int id)
         {
-            Product = product;
             this.id = id;
         }
 

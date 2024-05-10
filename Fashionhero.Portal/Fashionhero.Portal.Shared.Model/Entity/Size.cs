@@ -6,9 +6,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public Size(int id, Product product)
+        public Size(int id)
         {
-            Product = product;
             this.id = id;
         }
 
@@ -32,6 +31,9 @@ namespace Fashionhero.Portal.Shared.Model.Entity
 
         /// <inheritdoc />
         public string ModelProductNumber { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
 
         /// <inheritdoc />
         public int Id

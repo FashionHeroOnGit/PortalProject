@@ -33,5 +33,8 @@ namespace Fashionhero.Portal.Shared.Model.Dto
 
         /// <inheritdoc />
         public string Colour { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
     }
 }

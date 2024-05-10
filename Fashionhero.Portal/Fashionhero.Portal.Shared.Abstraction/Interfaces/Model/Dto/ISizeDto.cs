@@ -10,6 +10,7 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Dto
         string? Secondary { get; set; }
         string LinkPostFix { get; set; }
         string ModelProductNumber { get; set; }
+        int ReferenceId { get; set; }
 
         bool IsStocked { get; }
     }
