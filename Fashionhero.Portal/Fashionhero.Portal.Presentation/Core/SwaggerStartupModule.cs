@@ -6,6 +6,8 @@ namespace Fashionhero.Portal.Presentation.Core
     public class SwaggerStartupModule : IStartupModule
     {
         private readonly string apiTitle;
+        private ILogger<SwaggerStartupModule>? logger;
+
 
         public SwaggerStartupModule(string apiTitle = "My API")
         {
@@ -15,9 +17,13 @@ namespace Fashionhero.Portal.Presentation.Core
         /// <inheritdoc />
         public void ConfigureServices(IServiceCollection services)
         {
+            logger = services.BuildServiceProvider().GetService<ILogger<SwaggerStartupModule>>();
+
             // Register the Swagger generator, defining 1 or more Swagger documents.
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = apiTitle, Version = "v1",}); });
             services.AddSwaggerGenNewtonsoftSupport();
+
+            logger?.LogDebug("Completed Configuration of Services.");
         }
 
         /// <inheritdoc />
@@ -41,6 +47,8 @@ namespace Fashionhero.Portal.Presentation.Core
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{apiTitle}");
                 c.RoutePrefix = string.Empty;
             });
+
+            logger?.LogDebug("Completed Configuration of Application.");
         }
     }
 }

@@ -5,13 +5,19 @@ namespace Fashionhero.Portal.Presentation.Core
 {
     public class ApiStartupModule : IStartupModule
     {
+        private ILogger<ApiStartupModule>? logger;
+
         /// <inheritdoc />
         public void ConfigureServices(IServiceCollection services)
         {
+            logger = services.BuildServiceProvider().GetService<ILogger<ApiStartupModule>>();
+
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 
             services.AddEndpointsApiExplorer();
+
+            logger?.LogDebug("Completed Configuration of Services.");
         }
 
         /// <inheritdoc />
@@ -26,6 +32,8 @@ namespace Fashionhero.Portal.Presentation.Core
 
             var castApp = (WebApplication) app;
             castApp.MapControllers();
+
+            logger?.LogDebug("Completed Configuration of Application.");
         }
     }
 }

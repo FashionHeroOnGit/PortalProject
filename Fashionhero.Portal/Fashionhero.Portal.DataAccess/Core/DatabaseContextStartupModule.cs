@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.DataAccess.Core
 {
@@ -11,6 +12,7 @@ namespace Fashionhero.Portal.DataAccess.Core
 
         private readonly bool migrateOnStartup;
         private readonly SetupOptionsDelegate setupOptions;
+        private ILogger<DatabaseContextStartupModule<TContext>>? logger;
 
 
         public DatabaseContextStartupModule(SetupOptionsDelegate setup, bool migrateOnStartup = true)
@@ -25,7 +27,11 @@ namespace Fashionhero.Portal.DataAccess.Core
         /// <inheritdoc />
         public void ConfigureServices(IServiceCollection services)
         {
+            logger = services.BuildServiceProvider().GetService<ILogger<DatabaseContextStartupModule<TContext>>>();
+
             services.AddDbContext<TContext>(options => setupOptions.Invoke(options));
+
+            logger?.LogDebug("Completed Configuration of Services.");
         }
 
         /// <inheritdoc />
@@ -38,6 +44,8 @@ namespace Fashionhero.Portal.DataAccess.Core
                 app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             using var context = service.ServiceProvider.GetService<TContext>();
             context?.Database.Migrate();
+
+            logger?.LogDebug("Completed Configuration of Application.");
         }
     }
 }
