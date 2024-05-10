@@ -6,7 +6,7 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public Size(int id)
+        public Size(int id = 0)
         {
             this.id = id;
         }
