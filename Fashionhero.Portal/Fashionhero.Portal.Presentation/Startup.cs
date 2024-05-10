@@ -12,7 +12,7 @@ namespace Fashionhero.Portal.Presentation
     public class Startup : ModularStartup
     {
         private const string DATABASE_CONNECTION_STRING_NAME = "mainDb";
-        private const string LOG_FILE = "portal.log";
+        private const string LOG_FILE = "Storage/portal.log";
 
         public Startup(IConfiguration config) : base(config)
         {
