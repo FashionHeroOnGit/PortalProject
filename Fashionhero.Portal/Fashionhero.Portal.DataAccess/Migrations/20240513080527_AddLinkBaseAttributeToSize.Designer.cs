@@ -3,6 +3,7 @@ using System;
 using Fashionhero.Portal.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fashionhero.Portal.DataAccess.Migrations
 {
     [DbContext(typeof(PortalDatabaseContext))]
-    partial class PortalDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240513080527_AddLinkBaseAttributeToSize")]
+    partial class AddLinkBaseAttributeToSize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -41,7 +44,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.LocaleProduct", b =>
@@ -107,7 +110,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasIndex("ReferenceId", "IsoName")
                         .IsUnique();
 
-                    b.ToTable("LocaleProducts", (string)null);
+                    b.ToTable("LocaleProducts");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Price", b =>
@@ -139,7 +142,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Prices", (string)null);
+                    b.ToTable("Prices");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Product", b =>
@@ -176,7 +179,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Size", b =>
@@ -233,7 +236,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasIndex("ReferenceId")
                         .IsUnique();
 
-                    b.ToTable("Sizes", (string)null);
+                    b.ToTable("Sizes");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Tag", b =>
@@ -264,7 +267,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Image", b =>
