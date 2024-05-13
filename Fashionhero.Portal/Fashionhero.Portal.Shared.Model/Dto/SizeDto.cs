@@ -20,6 +20,9 @@ namespace Fashionhero.Portal.Shared.Model.Dto
         public string LinkPostFix { get; set; }
 
         /// <inheritdoc />
+        public string LinkBase { get; set; }
+
+        /// <inheritdoc />
         public string ModelProductNumber { get; set; }
 
         /// <inheritdoc />

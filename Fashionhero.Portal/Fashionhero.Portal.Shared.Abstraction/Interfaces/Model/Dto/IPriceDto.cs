@@ -5,7 +5,7 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Dto
 {
     public interface IPriceDto : IDto
     {
-        float Sale { get; set; }
+        float NormalSell { get; set; }
         float? Discount { get; set; }
         CurrencyCode Currency { get; set; }
     }

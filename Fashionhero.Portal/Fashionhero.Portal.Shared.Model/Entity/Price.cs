@@ -16,7 +16,7 @@ namespace Fashionhero.Portal.Shared.Model.Entity
         public IProduct Product { get; set; }
 
         /// <inheritdoc />
-        public float Sale { get; set; }
+        public float NormalSell { get; set; }
 
         /// <inheritdoc />
         public float? Discount { get; set; }

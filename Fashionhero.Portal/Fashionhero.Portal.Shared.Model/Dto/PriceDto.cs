@@ -6,7 +6,7 @@ namespace Fashionhero.Portal.Shared.Model.Dto
     public class PriceDto : IPriceDto
     {
         /// <inheritdoc />
-        public float Sale { get; set; }
+        public float NormalSell { get; set; }
 
         /// <inheritdoc />
         public float? Discount { get; set; }
