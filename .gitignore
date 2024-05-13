@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 /Fashionhero.Portal/Fashionhero.Portal.Presentation/*.db*
+/Fashionhero.Portal/Fashionhero.Portal.Presentation/Storage/*.db*
+/Fashionhero.Portal/.idea/*
