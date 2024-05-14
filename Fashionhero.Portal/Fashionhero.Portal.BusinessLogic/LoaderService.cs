@@ -3,8 +3,10 @@ using System.Xml.Linq;
 using Fashionhero.Portal.BusinessLogic.Extensions;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Fashionhero.Portal.Shared.Model.Entity;
+using Fashionhero.Portal.Shared.Model.Searchable;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic
@@ -50,19 +52,106 @@ namespace Fashionhero.Portal.BusinessLogic
         private const string INVENTORY_SPARTOO_KODE = "spartoo-kode";
         private const string INVENTORY_PRODUCT_CATEGORY = "product_category";
         private readonly ILogger<LoaderService> logger;
+        private readonly IEntityQueryManager<Product, SearchableProduct> productManager;
 
 
-        public LoaderService(ILogger<LoaderService> logger)
+        public LoaderService(
+            ILogger<LoaderService> logger, IEntityQueryManager<Product, SearchableProduct> productManager)
         {
             this.logger = logger;
+            this.productManager = productManager;
         }
 
         /// <inheritdoc />
-        public async Task GenerateInventory(ICollection<string> languagePaths, string inventoryPath)
+        public async Task UpdateInventory(ICollection<string> languagePaths, string inventoryPath)
         {
             var localeProducts = await ProcessLanguagePaths(languagePaths);
             var sizes = (await GetSizes(inventoryPath)).Where(x => x.Quantity > 0).ToList();
-            var products = await GetMasterProducts(inventoryPath, localeProducts, sizes);
+            var cleanedSizes = await DiscardSizesWithDuplicateEan(sizes);
+            var loadedProducts = await GetMasterProducts(inventoryPath, localeProducts, cleanedSizes);
+
+            var databaseProducts = (await productManager.GetEntities(new SearchableProduct())).ToList();
+            var loadedReferenceIds = loadedProducts.Select(x => x.ReferenceId).ToList();
+            var databaseReferenceIds = databaseProducts.Select(x => x.ReferenceId).ToList();
+
+            var productsToUpdate = databaseProducts.Where(x => loadedReferenceIds.Contains(x.ReferenceId)).ToList();
+            var productsToAdd = loadedProducts.Where(x => !databaseReferenceIds.Contains(x.ReferenceId)).ToList();
+
+            var updateReferenceIds = productsToUpdate.Select(x => x.ReferenceId).ToList();
+            var loadedProductsForUpdating =
+                loadedProducts.Where(x => updateReferenceIds.Contains(x.ReferenceId)).ToList();
+
+            var mappedProductsToUpdate =
+                await MapLoadedProductsToDatabaseProducts(loadedProductsForUpdating, productsToUpdate);
+
+            await productManager.UpdateEntities(mappedProductsToUpdate.Cast<Product>());
+            await productManager.AddEntities(productsToAdd.Cast<Product>());
+        }
+
+        private Task<ICollection<ISize>> DiscardSizesWithDuplicateEan(ICollection<ISize> sizes)
+        {
+            var eanCounter = new Dictionary<long, ICollection<ISize>>();
+            foreach (ISize size in sizes)
+            {
+                if (!eanCounter.ContainsKey(size.Ean))
+                    eanCounter.Add(size.Ean, new List<ISize>());
+                eanCounter[size.Ean].Add(size);
+            }
+
+            var result = new List<ISize>();
+            foreach (var eanCount in eanCounter)
+            {
+                if (eanCount.Value.Count > 1)
+                {
+                    string referenceIds = string.Join(", ", eanCount.Value.Skip(1).Select(x => x.ReferenceId));
+                    logger.LogWarning($"Multiple product sizes with same Ean ({eanCount.Key}) exist. " +
+                                      $"Discarding all but the first found size. Discarded Reference Id's: {referenceIds}");
+                }
+
+                result.Add(eanCount.Value.First());
+            }
+
+            return Task.FromResult(result as ICollection<ISize>);
+        }
+
+        private async Task<ICollection<IProduct>> MapLoadedProductsToDatabaseProducts(
+            IEnumerable<IProduct> loadedProducts, IEnumerable<IProduct> databaseProducts)
+        {
+            var loadedProductsList = loadedProducts.ToList();
+            var databaseProductsList = databaseProducts.ToList();
+
+            var mapTasks = databaseProductsList.Select(x => MapLoadedProductsToDatabaseProduct(loadedProductsList, x))
+                .ToList();
+            return await Task.WhenAll(mapTasks);
+        }
+
+        private Task<IProduct> MapLoadedProductsToDatabaseProduct(
+            ICollection<IProduct> loadedProducts, IProduct databaseProduct)
+        {
+            try
+            {
+                IProduct loadedProduct =
+                    loadedProducts.FirstOrDefault(x => x.ReferenceId == databaseProduct.ReferenceId) ??
+                    throw new ArgumentException(
+                        $"Expected to find a loaded product with following referenceId {databaseProduct.ReferenceId}, but none was found.");
+
+                databaseProduct.Sizes = loadedProduct.Sizes;
+                databaseProduct.Locales = loadedProduct.Locales;
+                databaseProduct.Prices = loadedProduct.Prices;
+                databaseProduct.ExtraTags = loadedProduct.ExtraTags;
+                databaseProduct.Images = loadedProduct.Images;
+                databaseProduct.Manufacturer = loadedProduct.Manufacturer;
+                databaseProduct.LinkBase = loadedProduct.LinkBase;
+                databaseProduct.Brand = loadedProduct.Brand;
+                databaseProduct.Category = loadedProduct.Category;
+
+                return Task.FromResult(databaseProduct);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Failed to map Loaded Products to an existing entry in the database.");
+                throw;
+            }
         }
 
         private async Task<ICollection<IProduct>> GetMasterProducts(
