@@ -21,5 +21,11 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
 
         /// <inheritdoc />
         public int Id { get; set; }
+
+        /// <inheritdoc />
+        public DateTime CreatedDateTime { get; set; }
+
+        /// <inheritdoc />
+        public DateTime UpdatedDateTime { get; set; }
     }
 }
