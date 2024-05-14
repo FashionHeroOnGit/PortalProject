@@ -3,11 +3,8 @@
 namespace Fashionhero.Portal.DataAccess.Core
 {
     public abstract class
-        BaseEntityQueryManager<TContext, TEntity, TSearchable, TDto> : IEntityQueryManager<TEntity, TSearchable, TDto>
-        where TContext : BaseDatabaseContext
-        where TEntity : class, IEntity
-        where TSearchable : class, ISearchable
-        where TDto : class, IDto
+        BaseEntityQueryManager<TContext, TEntity, TSearchable> : IEntityQueryManager<TEntity, TSearchable>
+        where TContext : BaseDatabaseContext where TEntity : class, IEntity where TSearchable : class, ISearchable
     {
         protected readonly TContext context;
 
@@ -16,17 +13,13 @@ namespace Fashionhero.Portal.DataAccess.Core
             this.context = context;
         }
 
-
         /// <inheritdoc />
-        public async Task<TEntity> AddEntity(TDto dto)
+        public Task<TEntity> AddEntity(TEntity entity)
         {
-            return context.Add(BuildEntity(dto)).Entity; // <-- Incorrect retrieval of the supposed result
+            throw new NotImplementedException();
         }
 
-        protected abstract TEntity BuildEntity(TDto dto);
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TDto> dtos)
+        public async Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TEntity> entities)
         {
             throw new NotImplementedException();
         }

@@ -1,21 +1,14 @@
 ﻿using Fashionhero.Portal.DataAccess.Core;
-using Fashionhero.Portal.Shared.Model.Dto;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
 
 namespace Fashionhero.Portal.DataAccess.Manager
 {
-    public class SizeQueryManager : BaseEntityQueryManager<PortalDatabaseContext, Size, SearchableSize, SizeDto>
+    public class SizeQueryManager : BaseEntityQueryManager<PortalDatabaseContext, Size, SearchableSize>
     {
         /// <inheritdoc />
         public SizeQueryManager(PortalDatabaseContext context) : base(context)
         {
-        }
-
-        /// <inheritdoc />
-        protected override Size BuildEntity(SizeDto dto)
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc />

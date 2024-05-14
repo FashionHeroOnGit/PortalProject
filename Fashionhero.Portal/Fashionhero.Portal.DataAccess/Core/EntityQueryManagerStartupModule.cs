@@ -6,22 +6,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.DataAccess.Core
 {
-    public class EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable, TDto> : IStartupModule
-        where TQuery : class, IEntityQueryManager<TEntity, TSearchable, TDto>
+    public class EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable> : IStartupModule
+        where TQuery : class, IEntityQueryManager<TEntity, TSearchable>
         where TEntity : class, IEntity
         where TSearchable : class, ISearchable
-        where TDto : class, IDto
     {
-        private ILogger<EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable, TDto>>? logger;
+        private ILogger<EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable>>? logger;
 
 
         /// <inheritdoc />
         public void ConfigureServices(IServiceCollection services)
         {
             logger = services.BuildServiceProvider()
-                .GetService<ILogger<EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable, TDto>>>();
+                .GetService<ILogger<EntityQueryManagerStartupModule<TQuery, TEntity, TSearchable>>>();
 
-            services.AddScoped<IEntityQueryManager<TEntity, TSearchable, TDto>, TQuery>();
+            services.AddScoped<IEntityQueryManager<TEntity, TSearchable>, TQuery>();
 
             logger?.LogDebug("Completed Configuration of Services.");
         }

@@ -1,10 +1,11 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Dto;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
+﻿using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 
 namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
 {
-    public interface ISearchableTag : ITagDto, ISearchable
+    public interface ISearchableTag : ISearchable
     {
         int ProductId { get; set; }
+        string Name { get; set; }
+        string Value { get; set; }
     }
 }
