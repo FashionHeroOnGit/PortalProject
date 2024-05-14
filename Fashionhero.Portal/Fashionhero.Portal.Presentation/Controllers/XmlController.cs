@@ -17,21 +17,21 @@ namespace Fashionhero.Portal.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateInventory([FromBody] GenerateArguments args)
+        public async Task<IActionResult> UpdateInventory([FromBody] UpdateInventoryArguments args)
         {
             try
             {
-                await loader.GenerateInventory(args.LanguagePaths, args.InventoryPath);
+                await loader.UpdateInventory(args.LanguagePaths, args.InventoryPath);
                 return Ok();
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Error occured during execution of {nameof(GenerateInventory)}.");
+                logger.LogError(e, $"Error occured during execution of {nameof(UpdateInventory)}.");
                 throw;
             }
         }
 
-        public class GenerateArguments
+        public class UpdateInventoryArguments
         {
             public string[] LanguagePaths { get; set; }
             public string InventoryPath { get; set; }

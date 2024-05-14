@@ -7,6 +7,6 @@
         /// </summary>
         /// <param name="languagePaths"></param>
         /// <param name="inventoryPath"></param>
-        Task GenerateInventory(ICollection<string> languagePaths, string inventoryPath);
+        Task UpdateInventory(ICollection<string> languagePaths, string inventoryPath);
     }
 }
