@@ -1,6 +1,7 @@
 ﻿using Fashionhero.Portal.DataAccess.Core;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
+using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.DataAccess.Manager
 {
@@ -8,7 +9,8 @@ namespace Fashionhero.Portal.DataAccess.Manager
         SearchableLocaleProduct>
     {
         /// <inheritdoc />
-        public LocaleProductQueryManager(PortalDatabaseContext context) : base(context)
+        public LocaleProductQueryManager(
+            PortalDatabaseContext context, ILogger<LocaleProductQueryManager> logger) : base(context, logger)
         {
         }
 

@@ -1,13 +1,15 @@
 ﻿using Fashionhero.Portal.DataAccess.Core;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
+using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.DataAccess.Manager
 {
     public class ImageQueryManager : BaseEntityQueryManager<PortalDatabaseContext, Image, SearchableImage>
     {
         /// <inheritdoc />
-        public ImageQueryManager(PortalDatabaseContext context) : base(context)
+        public ImageQueryManager(PortalDatabaseContext context, ILogger<ImageQueryManager> logger) : base(context,
+            logger)
         {
         }
 
