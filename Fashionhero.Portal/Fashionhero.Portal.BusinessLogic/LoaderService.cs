@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using Fashionhero.Portal.BusinessLogic.Extensions;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
@@ -133,7 +134,7 @@ namespace Fashionhero.Portal.BusinessLogic
                 IProduct loadedProduct =
                     loadedProducts.FirstOrDefault(x => x.ReferenceId == databaseProduct.ReferenceId) ??
                     throw new ArgumentException(
-                        $"Expected to find a loaded product with following referenceId {databaseProduct.ReferenceId}, but none was found.");
+                        $"Expected to find a loaded product with following {nameof(IProduct.ReferenceId)} ({databaseProduct.ReferenceId}), but none was found.");
 
                 databaseProduct = ClearRemovedChildren(loadedProduct, databaseProduct);
                 databaseProduct = AddNewChildren(loadedProduct, databaseProduct);
@@ -141,22 +142,20 @@ namespace Fashionhero.Portal.BusinessLogic
                 databaseProduct.Sizes = await Task.WhenAll(
                     databaseProduct.Sizes.Select(x => MapLoadedSizesToDatabaseSize(loadedProduct.Sizes, x)));
                 databaseProduct.Locales = await Task.WhenAll(databaseProduct.Locales.Select(x =>
-                    MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x)));
+                    MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x,
+                        loadedProduct.ReferenceId)));
                 databaseProduct.Prices =
                     await Task.WhenAll(databaseProduct.Prices.Select(x =>
                         MapLoadedPricesToDatabasePrice(loadedProduct.Prices, x)));
                 databaseProduct.ExtraTags =
                     await Task.WhenAll(databaseProduct.ExtraTags.Select(x =>
                         MapLoadedTagToDatabaseTag(loadedProduct.ExtraTags, x)));
-                databaseProduct.Images =
-                    await Task.WhenAll(databaseProduct.Images.Select(x =>
-                        MapLoadedImagesToDatabaseImage(loadedProduct.Images, x)));
+                databaseProduct.Images = loadedProduct.Images;
 
                 databaseProduct.Manufacturer = loadedProduct.Manufacturer;
                 databaseProduct.LinkBase = loadedProduct.LinkBase;
                 databaseProduct.Brand = loadedProduct.Brand;
                 databaseProduct.Category = loadedProduct.Category;
-
 
                 return databaseProduct;
             }
@@ -167,40 +166,138 @@ namespace Fashionhero.Portal.BusinessLogic
             }
         }
 
+        private List<TResult> GetExceptedList<TEntity, TResult>(
+            ICollection<TEntity> sourceOne, ICollection<TEntity> sourceTwo, Func<TEntity, TResult> selector)
+            where TEntity : IEntity
+        {
+            return sourceOne.Select(selector).Except(sourceTwo.Select(selector)).ToList();
+        }
+
         private IProduct ClearRemovedChildren(IProduct loadedProduct, IProduct databaseProduct)
         {
-            throw new NotImplementedException();
+            var toDeleteLocaleProductReferenceIds =
+                GetExceptedList(databaseProduct.Locales, loadedProduct.Locales, x => x.ReferenceId);
+            databaseProduct.Locales = databaseProduct.Locales
+                .Where(x => !toDeleteLocaleProductReferenceIds.Contains(x.ReferenceId)).ToList();
+
+            var toDeleteSizeReferenceIds = GetExceptedList(databaseProduct.Sizes, loadedProduct.Sizes,
+                x => x.ReferenceId);
+            databaseProduct.Sizes = databaseProduct.Sizes.Where(x => !toDeleteSizeReferenceIds.Contains(x.ReferenceId))
+                .ToList();
+
+            var toDeleteTagNames = GetExceptedList(databaseProduct.ExtraTags, loadedProduct.ExtraTags, x => x.Name);
+            databaseProduct.ExtraTags =
+                databaseProduct.ExtraTags.Where(x => !toDeleteTagNames.Contains(x.Name)).ToList();
+
+            //var toDeleteImageUrl = GetExceptedList(databaseProduct.Images, loadedProduct.Images, x => x.Url);
+            //databaseProduct.Images = databaseProduct.Images.Where(x => !toDeleteImageUrl.Contains(x.Url)).ToList();
+
+            var toDeletePriceCurrency = GetExceptedList(databaseProduct.Prices, loadedProduct.Prices, x => x.Currency);
+            databaseProduct.Prices =
+                databaseProduct.Prices.Where(x => !toDeletePriceCurrency.Contains(x.Currency)).ToList();
+
+            return databaseProduct;
         }
 
         private IProduct AddNewChildren(IProduct loadedProduct, IProduct databaseProduct)
         {
-            throw new NotImplementedException();
+            var newLocaleProductReferenceIds =
+                GetExceptedList(loadedProduct.Locales, databaseProduct.Locales, x => x.ReferenceId);
+            var localeProductsList = databaseProduct.Locales.ToList();
+            localeProductsList.AddRange(loadedProduct.Locales.Where(x =>
+                newLocaleProductReferenceIds.Contains(x.ReferenceId)));
+            databaseProduct.Locales = localeProductsList;
+
+            var newSizeReferenceIds = GetExceptedList(loadedProduct.Sizes, databaseProduct.Sizes, x => x.ReferenceId);
+            var sizesList = databaseProduct.Sizes.ToList();
+            sizesList.AddRange(loadedProduct.Sizes.Where(x => newSizeReferenceIds.Contains(x.ReferenceId)));
+            databaseProduct.Sizes = sizesList;
+
+            var newTagNames = GetExceptedList(loadedProduct.ExtraTags, databaseProduct.ExtraTags, x => x.Name);
+            var tagsList = databaseProduct.ExtraTags.ToList();
+            tagsList.AddRange(loadedProduct.ExtraTags.Where(x => newTagNames.Contains(x.Name)));
+            databaseProduct.ExtraTags = tagsList;
+
+            //var newImageUrls = GetExceptedList(loadedProduct.Images, databaseProduct.Images, x => x.Url);
+            //var imagesList = databaseProduct.Images.ToList();
+            //imagesList.AddRange(loadedProduct.Images.Where(x => newImageUrls.Contains(x.Url)));
+            //databaseProduct.Images = imagesList;
+
+            var newPriceCurrencies = GetExceptedList(loadedProduct.Prices, databaseProduct.Prices, x => x.Currency);
+            var pricesList = databaseProduct.Prices.ToList();
+            pricesList.AddRange(loadedProduct.Prices.Where(x => newPriceCurrencies.Contains(x.Currency)));
+            databaseProduct.Prices = pricesList;
+
+            return databaseProduct;
         }
 
         private Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
         {
-            throw new NotImplementedException();
+            ISize loadedSize = loadedSizes.FirstOrDefault(x => x.ReferenceId == databaseSize.ReferenceId) ??
+                               throw new ArgumentException(
+                                   $"Expected to find a loaded {nameof(Size)} with following {nameof(ISize.ReferenceId)} ({databaseSize.ReferenceId}), but none was found.");
+
+            databaseSize.Quantity = loadedSize.Quantity;
+            databaseSize.LinkBase = loadedSize.LinkBase;
+            databaseSize.Ean = loadedSize.Ean; // Todo: find out if the Ean changing is valid.
+            databaseSize.ModelProductNumber = loadedSize.ModelProductNumber;
+            databaseSize.LinkPostFix = loadedSize.LinkPostFix;
+            databaseSize.Primary = loadedSize.Primary;
+            databaseSize.Secondary = loadedSize.Secondary;
+
+            return Task.FromResult(databaseSize);
         }
 
         private Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
         {
-            throw new NotImplementedException();
+            ITag loadedTag =
+                loadedTags.FirstOrDefault(x =>
+                    x.Name == databaseTag.Name && x.ReferenceId == databaseTag.ReferenceId) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(Tag)} with following {nameof(ITag.Name)} ({databaseTag.Name}) " +
+                    $"and {nameof(ITag.ReferenceId)} ({databaseTag.ReferenceId}), but none was found.");
+
+            databaseTag.Value = loadedTag.Value;
+
+            return Task.FromResult(databaseTag);
         }
 
-        private Task<IImage> MapLoadedImagesToDatabaseImage(ICollection<IImage> loadedImages, IImage databaseImage)
+        private Task<IPrice> MapLoadedPricesToDatabasePrice(ICollection<IPrice> loadedPrices, IPrice databasePrice)
         {
-            throw new NotImplementedException();
-        }
+            IPrice loadedPrice =
+                loadedPrices.FirstOrDefault(x =>
+                    x.Currency == databasePrice.Currency && x.ReferenceId == databasePrice.ReferenceId) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(Price)} with following {nameof(ISize.ReferenceId)} ({databasePrice.ReferenceId}) " +
+                    $"and {nameof(IPrice.Currency)} ({databasePrice.Currency}), but none was found.");
 
-        private Task<IPrice> MapLoadedPricesToDatabasePrice(ICollection<IPrice> loadedPrices, IPrice databaseImage)
-        {
-            throw new NotImplementedException();
+            databasePrice.Discount = loadedPrice.Discount;
+            databasePrice.NormalSell = loadedPrice.NormalSell;
+
+            return Task.FromResult(databasePrice);
         }
 
         private Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
-            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
+            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct,
+            int parentReferenceId)
         {
-            throw new NotImplementedException();
+            ILocaleProduct loadedLocaleProduct =
+                loadedLocaleProducts.FirstOrDefault(x =>
+                    x.ItemGroupId == parentReferenceId && x.IsoName == databaseLocaleProduct.IsoName &&
+                    x.ReferenceId == databaseLocaleProduct.ReferenceId) ?? throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(LocaleProduct)} with following {nameof(ILocaleProduct.ItemGroupId)} ({parentReferenceId}), " +
+                    $" {nameof(ILocaleProduct.IsoName)} ({databaseLocaleProduct.IsoName}) and {nameof(ILocaleProduct.ReferenceId)} ({databaseLocaleProduct.ReferenceId}), but none was found.");
+
+            databaseLocaleProduct.Colour = loadedLocaleProduct.Colour;
+            databaseLocaleProduct.CountryOrigin = loadedLocaleProduct.CountryOrigin;
+            databaseLocaleProduct.Gender = loadedLocaleProduct.Gender;
+            databaseLocaleProduct.Description = loadedLocaleProduct.Description;
+            databaseLocaleProduct.Title = loadedLocaleProduct.Title;
+            databaseLocaleProduct.Type = loadedLocaleProduct.Type;
+            databaseLocaleProduct.LocalType = loadedLocaleProduct.LocalType;
+            databaseLocaleProduct.Material = loadedLocaleProduct.Material;
+
+            return Task.FromResult(databaseLocaleProduct);
         }
 
         private async Task<ICollection<IProduct>> GetMasterProducts(
@@ -252,24 +349,28 @@ namespace Fashionhero.Portal.BusinessLogic
                     NormalSell = element.GetTaggedValueAsFloat(INVENTORY_REGULAR_PRICE, logger),
                     Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE, logger),
                     Currency = CurrencyCode.DKK,
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
                 new Price
                 {
                     NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_EUR, logger),
                     Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_EUR, logger),
                     Currency = CurrencyCode.EUR,
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
                 new Price
                 {
                     NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_SEK, logger),
                     Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_SEK, logger),
                     Currency = CurrencyCode.SEK,
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
                 new Price
                 {
                     NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_PLN, logger),
                     Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_PLN, logger),
                     Currency = CurrencyCode.PLN,
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
             };
         }
@@ -281,6 +382,7 @@ namespace Fashionhero.Portal.BusinessLogic
                 new Image
                 {
                     Url = element.GetTagValueAsString(INVENTORY_IMAGE_LINK, logger),
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
             };
         }
@@ -293,6 +395,7 @@ namespace Fashionhero.Portal.BusinessLogic
                 {
                     Name = INVENTORY_SPARTOO_KODE,
                     Value = element.GetTagValueAsString(INVENTORY_SPARTOO_KODE, logger),
+                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
             };
         }
