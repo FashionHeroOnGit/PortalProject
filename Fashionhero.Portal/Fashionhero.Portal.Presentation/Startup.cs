@@ -21,7 +21,13 @@ namespace Fashionhero.Portal.Presentation
             AddModule(new SwaggerStartupModule("Portal"));
 
             AddModule(new DatabaseContextStartupModule<PortalDatabaseContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString(DATABASE_CONNECTION_STRING_NAME))));
+            {
+                options.UseSqlite(Configuration.GetConnectionString(DATABASE_CONNECTION_STRING_NAME));
+#if DEBUG
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+#endif
+            }));
 
             AddModule(new EntityQueryManagerStartupModule<ImageQueryManager, Image, SearchableImage>());
             AddModule(
