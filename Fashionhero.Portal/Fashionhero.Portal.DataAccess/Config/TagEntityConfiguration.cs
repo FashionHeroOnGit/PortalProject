@@ -10,6 +10,9 @@ namespace Fashionhero.Portal.DataAccess.Config
         public override void Configure(EntityTypeBuilder<Tag> builder)
         {
             base.Configure(builder);
+
+            builder.HasKey(x => new {x.Id, x.ProductId,});
+            builder.HasIndex(x => new {x.Name, x.ProductId,}).IsUnique();
         }
     }
 }

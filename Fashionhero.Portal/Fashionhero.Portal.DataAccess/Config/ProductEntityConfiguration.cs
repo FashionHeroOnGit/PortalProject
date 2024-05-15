@@ -11,6 +11,8 @@ namespace Fashionhero.Portal.DataAccess.Config
         {
             base.Configure(builder);
 
+            builder.HasKey(x => x.Id);
+
             builder.HasMany(x => (ICollection<Image>) x.Images).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId);
             builder.HasMany(x => (ICollection<LocaleProduct>) x.Locales).WithOne(x => (Product) x.Product)

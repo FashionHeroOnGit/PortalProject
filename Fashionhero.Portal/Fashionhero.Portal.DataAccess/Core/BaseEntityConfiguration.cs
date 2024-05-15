@@ -12,7 +12,6 @@ namespace Fashionhero.Portal.DataAccess.Core
             Type type = typeof(TEntity);
             var idName = $"{type.Name}Id";
 
-            builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).HasColumnName(idName);
         }
 

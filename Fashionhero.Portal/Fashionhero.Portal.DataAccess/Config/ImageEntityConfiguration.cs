@@ -10,6 +10,8 @@ namespace Fashionhero.Portal.DataAccess.Config
         public override void Configure(EntityTypeBuilder<Image> builder)
         {
             base.Configure(builder);
+
+            builder.HasKey(x => new {x.Id, x.ProductId,});
         }
     }
 }
