@@ -6,6 +6,27 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
+        /// <summary>
+        /// Constructor for Entity Framework Core
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="images"></param>
+        /// <param name="locales"></param>
+        /// <param name="sizes"></param>
+        /// <param name="prices"></param>
+        /// <param name="extraTags"></param>
+        private Product(
+            int id, ICollection<IImage> images, ICollection<ILocaleProduct> locales, ICollection<ISize> sizes,
+            ICollection<IPrice> prices, ICollection<ITag> extraTags)
+        {
+            this.id = id;
+            Images = images.ToList();
+            Locales = locales.ToList();
+            Sizes = sizes.ToList();
+            Prices = prices.ToList();
+            ExtraTags = extraTags.ToList();
+        }
+
         public Product(int id = 0)
         {
             this.id = id;

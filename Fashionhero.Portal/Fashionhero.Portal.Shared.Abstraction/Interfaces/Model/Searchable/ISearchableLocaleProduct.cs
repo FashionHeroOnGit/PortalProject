@@ -2,7 +2,7 @@
 
 namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
 {
-    public interface ISearchableLocaleProduct : ISearchable
+    public interface ISearchableLocaleProduct : ISearchable, ICommonSearchable
     {
         int ProductId { get; set; }
         int ItemGroupId { get; set; }
@@ -15,6 +15,5 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
         string Material { get; set; }
         string? Gender { get; set; }
         string Colour { get; set; }
-        int ReferenceId { get; set; }
     }
 }

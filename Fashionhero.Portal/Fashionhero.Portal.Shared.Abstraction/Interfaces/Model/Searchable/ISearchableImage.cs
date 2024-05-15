@@ -2,7 +2,7 @@
 
 namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
 {
-    public interface ISearchableImage : ISearchable
+    public interface ISearchableImage : ISearchable, ICommonSearchable
     {
         int ProductId { get; set; }
         string Url { get; set; }

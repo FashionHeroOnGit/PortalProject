@@ -25,5 +25,8 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
 
         /// <inheritdoc />
         public int ProductId { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
     }
 }

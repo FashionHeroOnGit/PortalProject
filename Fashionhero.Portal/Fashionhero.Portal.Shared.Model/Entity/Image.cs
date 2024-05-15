@@ -32,5 +32,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
 
         /// <inheritdoc />
         public DateTime UpdatedDateTime { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
     }
 }
