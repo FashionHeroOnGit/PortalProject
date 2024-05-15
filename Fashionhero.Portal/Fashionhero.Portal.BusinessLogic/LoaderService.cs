@@ -63,12 +63,12 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         /// <inheritdoc />
-        public async Task UpdateInventory(ICollection<string> languagePaths, string inventoryPath)
+        public async Task UpdateInventory(Dictionary<string, string> languageXmls, string inventoryXml)
         {
-            var localeProducts = await ProcessLanguagePaths(languagePaths);
-            var sizes = (await GetSizes(inventoryPath)).Where(x => x.Quantity > 0).ToList();
+            var localeProducts = await ProcessLanguageXml(languageXmls);
+            var sizes = (await GetSizes(inventoryXml)).Where(x => x.Quantity > 0).ToList();
             var cleanedSizes = await DiscardSizesWithDuplicateEan(sizes);
-            var loadedProducts = await GetMasterProducts(inventoryPath, localeProducts, cleanedSizes);
+            var loadedProducts = await GetMasterProducts(inventoryXml, localeProducts, cleanedSizes);
 
             var databaseProducts = (await productManager.GetEntities(new SearchableProduct())).ToList();
             var loadedReferenceIds = loadedProducts.Select(x => x.ReferenceId).ToList();
@@ -125,7 +125,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return await Task.WhenAll(mapTasks);
         }
 
-        private Task<IProduct> MapLoadedProductsToDatabaseProduct(
+        private async Task<IProduct> MapLoadedProductsToDatabaseProduct(
             ICollection<IProduct> loadedProducts, IProduct databaseProduct)
         {
             try
@@ -135,32 +135,78 @@ namespace Fashionhero.Portal.BusinessLogic
                     throw new ArgumentException(
                         $"Expected to find a loaded product with following referenceId {databaseProduct.ReferenceId}, but none was found.");
 
-                databaseProduct.Sizes = loadedProduct.Sizes;
-                databaseProduct.Locales = loadedProduct.Locales;
-                databaseProduct.Prices = loadedProduct.Prices;
-                databaseProduct.ExtraTags = loadedProduct.ExtraTags;
-                databaseProduct.Images = loadedProduct.Images;
+                databaseProduct = ClearRemovedChildren(loadedProduct, databaseProduct);
+                databaseProduct = AddNewChildren(loadedProduct, databaseProduct);
+
+                databaseProduct.Sizes = await Task.WhenAll(
+                    databaseProduct.Sizes.Select(x => MapLoadedSizesToDatabaseSize(loadedProduct.Sizes, x)));
+                databaseProduct.Locales = await Task.WhenAll(databaseProduct.Locales.Select(x =>
+                    MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x)));
+                databaseProduct.Prices =
+                    await Task.WhenAll(databaseProduct.Prices.Select(x =>
+                        MapLoadedPricesToDatabasePrice(loadedProduct.Prices, x)));
+                databaseProduct.ExtraTags =
+                    await Task.WhenAll(databaseProduct.ExtraTags.Select(x =>
+                        MapLoadedTagToDatabaseTag(loadedProduct.ExtraTags, x)));
+                databaseProduct.Images =
+                    await Task.WhenAll(databaseProduct.Images.Select(x =>
+                        MapLoadedImagesToDatabaseImage(loadedProduct.Images, x)));
+
                 databaseProduct.Manufacturer = loadedProduct.Manufacturer;
                 databaseProduct.LinkBase = loadedProduct.LinkBase;
                 databaseProduct.Brand = loadedProduct.Brand;
                 databaseProduct.Category = loadedProduct.Category;
 
-                return Task.FromResult(databaseProduct);
+
+                return databaseProduct;
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failed to map Loaded Products to an existing entry in the database.");
+                logger.LogError(e, $"Failed to map Loaded Product to an existing entry in the database.");
                 throw;
             }
+        }
+
+        private IProduct ClearRemovedChildren(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IProduct AddNewChildren(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<IImage> MapLoadedImagesToDatabaseImage(ICollection<IImage> loadedImages, IImage databaseImage)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<IPrice> MapLoadedPricesToDatabasePrice(ICollection<IPrice> loadedPrices, IPrice databaseImage)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
+            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<ICollection<IProduct>> GetMasterProducts(
             string inventoryPath, ICollection<ILocaleProduct> localeProducts, ICollection<ISize> sizes)
         {
-            if (!inventoryPath.EndsWith(".xml"))
-                throw new ArgumentException("The supplied inventory path is not an .xml file.");
-
-            XDocument document = await GetDocument(inventoryPath);
+            XDocument document = GetDocument(inventoryPath);
 
             logger.LogWarning(
                 $"{nameof(Product)}s' '{nameof(Product.Manufacturer)}' attribute is set to the value of the '{INVENTORY_BRAND}' tag, " +
@@ -253,10 +299,7 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private async Task<ICollection<ISize>> GetSizes(string inventoryPath)
         {
-            if (!inventoryPath.EndsWith(".xml"))
-                throw new ArgumentException("The supplied inventory path is not an .xml file.");
-
-            XDocument document = await GetDocument(inventoryPath);
+            XDocument document = GetDocument(inventoryPath);
 
             var xmlSizes = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).Where(x =>
             {
@@ -285,37 +328,34 @@ namespace Fashionhero.Portal.BusinessLogic
             });
         }
 
-        private static Task<XDocument> GetDocument(string path)
+        private static XDocument GetDocument(string xml)
         {
-            return XDocument.LoadAsync(XmlReader.Create(File.OpenRead(path), new XmlReaderSettings {Async = true,}),
-                LoadOptions.PreserveWhitespace, CancellationToken.None);
+            return XDocument.Parse(xml, LoadOptions.PreserveWhitespace);
         }
 
-        private async Task<ICollection<ILocaleProduct>> ProcessLanguagePaths(ICollection<string> languagePaths)
+        private async Task<ICollection<ILocaleProduct>> ProcessLanguageXml(Dictionary<string, string> isoLanguageXmls)
         {
-            if (languagePaths.Any(x => !x.EndsWith(".xml")))
-                throw new ArgumentException("One or more of the supplied language files are not an .xml file.");
-
-            var generateTasks = languagePaths.Select(GenerateLocaleProducts);
+            var generateTasks = isoLanguageXmls.Select(GenerateLocaleProducts);
             var twoDimensionalLocaleProduct = await Task.WhenAll(generateTasks);
 
             return twoDimensionalLocaleProduct.SelectMany(x => x).ToList();
         }
 
-        private async Task<ICollection<ILocaleProduct>> GenerateLocaleProducts(string languagePath)
+        private async Task<ICollection<ILocaleProduct>> GenerateLocaleProducts(
+            KeyValuePair<string, string> isoLanguageXml)
         {
-            XDocument document = await GetDocument(languagePath);
+            XDocument document = GetDocument(isoLanguageXml.Value);
 
             var xmlLocaleProducts = document.Elements(LOCALE_ROOT).Elements(LOCALE_SINGLE_PRODUCT);
-            var generateTasks = xmlLocaleProducts.Select(x => GenerateLocaleProduct(x, languagePath));
+            var generateTasks = xmlLocaleProducts.Select(x => GenerateLocaleProduct(x, isoLanguageXml.Key));
             return await Task.WhenAll(generateTasks);
         }
 
-        private Task<LocaleProduct> GenerateLocaleProduct(XElement element, string languagePath)
+        private Task<LocaleProduct> GenerateLocaleProduct(XElement element, string isoName)
         {
             return Task.FromResult(new LocaleProduct
             {
-                IsoName = GetIsoName(languagePath),
+                IsoName = isoName,
                 ReferenceId = element.GetTagValueAsInt(LOCALE_ID, logger),
                 Title = element.GetTagValueAsString(LOCALE_TITLE, logger),
                 Description = element.GetTagValueAsString(LOCALE_DESCRIPTION, logger),
@@ -327,13 +367,6 @@ namespace Fashionhero.Portal.BusinessLogic
                 Material = element.GetTagValueAsString(LOCALE_MATERIALE, logger),
                 CountryOrigin = element.GetTagValueAsString(LOCALE_COUNTRY_OF_ORIGIN, logger),
             });
-        }
-
-
-        private static string GetIsoName(string languagePath)
-        {
-            string[] split = new FileInfo(languagePath).Name.Split('_');
-            return split.Length == 1 ? "dk" : split[0];
         }
     }
 }

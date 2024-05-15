@@ -5,8 +5,8 @@
         /// <summary>
         ///     Generates inventory in local Database from supplied Xml files.
         /// </summary>
-        /// <param name="languagePaths"></param>
-        /// <param name="inventoryPath"></param>
-        Task UpdateInventory(ICollection<string> languagePaths, string inventoryPath);
+        /// <param name="languageXmls"></param>
+        /// <param name="inventoryXml"></param>
+        Task UpdateInventory(Dictionary<string, string> languageXmls, string inventoryXml);
     }
 }
