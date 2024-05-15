@@ -3,6 +3,7 @@ using System;
 using Fashionhero.Portal.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fashionhero.Portal.DataAccess.Migrations
 {
     [DbContext(typeof(PortalDatabaseContext))]
-    partial class PortalDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240515103441_AddReferenceIdsToRemainingEntities")]
+    partial class AddReferenceIdsToRemainingEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -20,15 +23,14 @@ namespace Fashionhero.Portal.DataAccess.Migrations
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Image", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("ImageId");
 
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ReferenceId")
                         .HasColumnType("INTEGER");
@@ -40,7 +42,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -52,9 +54,11 @@ namespace Fashionhero.Portal.DataAccess.Migrations
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.LocaleProduct", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("LocaleProductId");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Colour")
                         .IsRequired()
@@ -88,9 +92,6 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ReferenceId")
                         .HasColumnType("INTEGER");
 
@@ -105,7 +106,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -118,9 +119,11 @@ namespace Fashionhero.Portal.DataAccess.Migrations
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Price", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("PriceId");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("TEXT");
@@ -134,16 +137,13 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<float>("NormalSell")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ReferenceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -193,9 +193,11 @@ namespace Fashionhero.Portal.DataAccess.Migrations
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Size", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("SizeId");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("TEXT");
@@ -219,9 +221,6 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
@@ -234,7 +233,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProductId");
 
                     b.HasIndex("Ean")
                         .IsUnique();
@@ -251,9 +250,11 @@ namespace Fashionhero.Portal.DataAccess.Migrations
             modelBuilder.Entity("Fashionhero.Portal.Shared.Model.Entity.Tag", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("TagId");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("TEXT");
@@ -261,9 +262,6 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ReferenceId")
                         .HasColumnType("INTEGER");
@@ -275,7 +273,7 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "ProductId");
 
                     b.HasIndex("ProductId");
 
