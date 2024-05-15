@@ -1,6 +1,7 @@
 ﻿using Fashionhero.Portal.DataAccess.Core;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.DataAccess.Manager
@@ -23,9 +24,14 @@ namespace Fashionhero.Portal.DataAccess.Manager
         protected override IQueryable<Product> AddQueryArguments(
             SearchableProduct searchable, IQueryable<Product> query)
         {
+            query = query.Include(x => x.Locales);
+            query = query.Include(x => x.Sizes);
+            query = query.Include(x => x.ExtraTags);
+            query = query.Include(x => x.Prices);
+            query = query.Include(x => x.Images);
+
             if (searchable.ReferenceId != default)
                 query = query.Where(x => x.ReferenceId == searchable.ReferenceId);
-
 
             return query;
         }
