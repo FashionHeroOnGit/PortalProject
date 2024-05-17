@@ -82,17 +82,16 @@ namespace Fashionhero.Portal.BusinessLogic
             var loadedProductsForUpdating =
                 loadedProducts.Where(x => updateReferenceIds.Contains(x.ReferenceId)).ToList();
 
-
-            var mappedProductsToUpdate = await MapLoadedProductsToDatabaseProducts(loadedProductsForUpdating,
-                productsToUpdate.Cast<IProduct>().ToList());
+            var mappedProductsToUpdate =
+                await MapLoadedProductsToDatabaseProducts(loadedProductsForUpdating, productsToUpdate);
 
             await productManager.UpdateEntities(mappedProductsToUpdate.Cast<Product>());
             await productManager.AddEntities(productsToAdd.Cast<Product>());
         }
 
-        private Task<IList<ISize>> DiscardSizesWithDuplicateEan(IList<ISize> sizes)
+        private Task<ICollection<ISize>> DiscardSizesWithDuplicateEan(ICollection<ISize> sizes)
         {
-            var eanCounter = new Dictionary<long, IList<ISize>>();
+            var eanCounter = new Dictionary<long, ICollection<ISize>>();
             foreach (ISize size in sizes)
             {
                 if (!eanCounter.ContainsKey(size.Ean))
@@ -113,11 +112,11 @@ namespace Fashionhero.Portal.BusinessLogic
                 result.Add(eanCount.Value.First());
             }
 
-            return Task.FromResult(result as IList<ISize>);
+            return Task.FromResult(result as ICollection<ISize>);
         }
 
-        private async Task<IList<IProduct>> MapLoadedProductsToDatabaseProducts(
-            IList<IProduct> loadedProducts, IList<IProduct> databaseProducts)
+        private async Task<ICollection<IProduct>> MapLoadedProductsToDatabaseProducts(
+            IEnumerable<IProduct> loadedProducts, IEnumerable<IProduct> databaseProducts)
         {
             var loadedProductsList = loadedProducts.ToList();
             var databaseProductsList = databaseProducts.ToList();
@@ -128,7 +127,7 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         private async Task<IProduct> MapLoadedProductsToDatabaseProduct(
-            IList<IProduct> loadedProducts, IProduct databaseProduct)
+            ICollection<IProduct> loadedProducts, IProduct databaseProduct)
         {
             try
             {
@@ -168,7 +167,8 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         private List<TResult> GetExceptedList<TEntity, TResult>(
-            IList<TEntity> sourceOne, IList<TEntity> sourceTwo, Func<TEntity, TResult> selector) where TEntity : IEntity
+            ICollection<TEntity> sourceOne, ICollection<TEntity> sourceTwo, Func<TEntity, TResult> selector)
+            where TEntity : IEntity
         {
             return sourceOne.Select(selector).Except(sourceTwo.Select(selector)).ToList();
         }
@@ -231,7 +231,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return databaseProduct;
         }
 
-        private Task<ISize> MapLoadedSizesToDatabaseSize(IList<ISize> loadedSizes, ISize databaseSize)
+        private Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
         {
             ISize loadedSize = loadedSizes.FirstOrDefault(x => x.ReferenceId == databaseSize.ReferenceId) ??
                                throw new ArgumentException(
@@ -248,7 +248,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return Task.FromResult(databaseSize);
         }
 
-        private Task<ITag> MapLoadedTagToDatabaseTag(IList<ITag> loadedTags, ITag databaseTag)
+        private Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
         {
             ITag loadedTag =
                 loadedTags.FirstOrDefault(x =>
@@ -262,7 +262,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return Task.FromResult(databaseTag);
         }
 
-        private Task<IPrice> MapLoadedPricesToDatabasePrice(IList<IPrice> loadedPrices, IPrice databasePrice)
+        private Task<IPrice> MapLoadedPricesToDatabasePrice(ICollection<IPrice> loadedPrices, IPrice databasePrice)
         {
             IPrice loadedPrice =
                 loadedPrices.FirstOrDefault(x =>
@@ -278,7 +278,8 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         private Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
-            IList<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct, int parentReferenceId)
+            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct,
+            int parentReferenceId)
         {
             ILocaleProduct loadedLocaleProduct =
                 loadedLocaleProducts.FirstOrDefault(x =>
@@ -299,8 +300,8 @@ namespace Fashionhero.Portal.BusinessLogic
             return Task.FromResult(databaseLocaleProduct);
         }
 
-        private async Task<IList<IProduct>> GetMasterProducts(
-            string inventoryPath, IList<ILocaleProduct> localeProducts, IList<ISize> sizes)
+        private async Task<ICollection<IProduct>> GetMasterProducts(
+            string inventoryPath, ICollection<ILocaleProduct> localeProducts, ICollection<ISize> sizes)
         {
             XDocument document = GetDocument(inventoryPath);
 
@@ -318,7 +319,7 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         private Task<Product> GenerateProduct(
-            XElement element, IList<ILocaleProduct> localeProducts, IList<ISize> sizes)
+            XElement element, ICollection<ILocaleProduct> localeProducts, ICollection<ISize> sizes)
         {
             string[] splitLink = element.GetTagValueAsString(INVENTORY_LINK, logger).Split('?');
             var newProduct = new Product
@@ -339,7 +340,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return Task.FromResult(newProduct);
         }
 
-        private IList<IPrice> GetPrices(XElement element)
+        private ICollection<IPrice> GetPrices(XElement element)
         {
             return new List<IPrice>
             {
@@ -374,7 +375,7 @@ namespace Fashionhero.Portal.BusinessLogic
             };
         }
 
-        private IList<IImage> GetImages(XElement element)
+        private ICollection<IImage> GetImages(XElement element)
         {
             return new List<IImage>
             {
@@ -386,7 +387,7 @@ namespace Fashionhero.Portal.BusinessLogic
             };
         }
 
-        private IList<ITag> GetExtraTags(XElement element)
+        private ICollection<ITag> GetExtraTags(XElement element)
         {
             return new List<ITag>
             {
@@ -399,7 +400,7 @@ namespace Fashionhero.Portal.BusinessLogic
             };
         }
 
-        private async Task<IList<ISize>> GetSizes(string inventoryPath)
+        private async Task<ICollection<ISize>> GetSizes(string inventoryPath)
         {
             XDocument document = GetDocument(inventoryPath);
 
@@ -435,7 +436,7 @@ namespace Fashionhero.Portal.BusinessLogic
             return XDocument.Parse(xml, LoadOptions.PreserveWhitespace);
         }
 
-        private async Task<IList<ILocaleProduct>> ProcessLanguageXml(Dictionary<string, string> isoLanguageXmls)
+        private async Task<ICollection<ILocaleProduct>> ProcessLanguageXml(Dictionary<string, string> isoLanguageXmls)
         {
             var generateTasks = isoLanguageXmls.Select(GenerateLocaleProducts);
             var twoDimensionalLocaleProduct = await Task.WhenAll(generateTasks);
@@ -443,7 +444,8 @@ namespace Fashionhero.Portal.BusinessLogic
             return twoDimensionalLocaleProduct.SelectMany(x => x).ToList();
         }
 
-        private async Task<IList<ILocaleProduct>> GenerateLocaleProducts(KeyValuePair<string, string> isoLanguageXml)
+        private async Task<ICollection<ILocaleProduct>> GenerateLocaleProducts(
+            KeyValuePair<string, string> isoLanguageXml)
         {
             XDocument document = GetDocument(isoLanguageXml.Value);
 

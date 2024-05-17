@@ -4,7 +4,7 @@ namespace Fashionhero.Portal.Presentation.Core
 {
     public abstract class ModularStartup : IStartupModule
     {
-        private readonly IList<IStartupModule> _modules;
+        private readonly ICollection<IStartupModule> _modules;
         public IConfiguration Configuration { get; private set; }
         public IServiceCollection Services { get; private set; }
         public IServiceProvider ServiceProvider { get; private set; }

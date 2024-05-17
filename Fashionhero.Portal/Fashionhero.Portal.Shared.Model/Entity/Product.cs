@@ -16,8 +16,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
         /// <param name="prices"></param>
         /// <param name="extraTags"></param>
         private Product(
-            int id, IList<IImage> images, IList<ILocaleProduct> locales, IList<ISize> sizes, IList<IPrice> prices,
-            IList<ITag> extraTags)
+            int id, ICollection<IImage> images, ICollection<ILocaleProduct> locales, ICollection<ISize> sizes,
+            ICollection<IPrice> prices, ICollection<ITag> extraTags)
         {
             this.id = id;
             Images = images.ToList();
@@ -33,19 +33,19 @@ namespace Fashionhero.Portal.Shared.Model.Entity
         }
 
         /// <inheritdoc />
-        public IList<IImage> Images { get; set; }
+        public ICollection<IImage> Images { get; set; }
 
         /// <inheritdoc />
-        public IList<ILocaleProduct> Locales { get; set; }
+        public ICollection<ILocaleProduct> Locales { get; set; }
 
         /// <inheritdoc />
-        public IList<ISize> Sizes { get; set; }
+        public ICollection<ISize> Sizes { get; set; }
 
         /// <inheritdoc />
-        public IList<IPrice> Prices { get; set; }
+        public ICollection<IPrice> Prices { get; set; }
 
         /// <inheritdoc />
-        public IList<ITag> ExtraTags { get; set; }
+        public ICollection<ITag> ExtraTags { get; set; }
 
         /// <inheritdoc />
         public int Id

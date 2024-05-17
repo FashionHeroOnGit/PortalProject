@@ -11,15 +11,15 @@ namespace Fashionhero.Portal.DataAccess.Config
         {
             base.Configure(builder);
 
-            builder.HasMany(x => (IList<Image>) x.Images).WithOne(x => (Product) x.Product)
+            builder.HasMany(x => (ICollection<Image>) x.Images).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId).IsRequired();
-            builder.HasMany(x => (IList<LocaleProduct>) x.Locales).WithOne(x => (Product) x.Product)
+            builder.HasMany(x => (ICollection<LocaleProduct>) x.Locales).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId).IsRequired();
-            builder.HasMany(x => (IList<Price>) x.Prices).WithOne(x => (Product) x.Product)
+            builder.HasMany(x => (ICollection<Price>) x.Prices).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId).IsRequired();
-            builder.HasMany(x => (IList<Size>) x.Sizes).WithOne(x => (Product) x.Product)
+            builder.HasMany(x => (ICollection<Size>) x.Sizes).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId).IsRequired();
-            builder.HasMany(x => (IList<Tag>) x.ExtraTags).WithOne(x => (Product) x.Product)
+            builder.HasMany(x => (ICollection<Tag>) x.ExtraTags).WithOne(x => (Product) x.Product)
                 .HasForeignKey(x => x.ProductId).IsRequired();
         }
     }
