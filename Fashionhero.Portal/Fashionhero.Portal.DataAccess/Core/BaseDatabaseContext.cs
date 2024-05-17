@@ -42,7 +42,7 @@ namespace Fashionhero.Portal.DataAccess.Core
         private void UpdateDatetimes()
         {
             var entries = ChangeTracker.Entries()
-                .Where(e => e is {Entity: IEntity, State: EntityState.Added or EntityState.Modified,});
+                .Where(e => e is {Entity: IEntity, State: EntityState.Added or EntityState.Modified,}).ToList();
 
             foreach (EntityEntry entityEntry in entries)
             {

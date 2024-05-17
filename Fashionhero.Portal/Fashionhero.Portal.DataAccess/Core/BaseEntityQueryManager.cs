@@ -31,11 +31,20 @@ namespace Fashionhero.Portal.DataAccess.Core
 
         public async Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TEntity> entities)
         {
-            var enumeratedEntities = entities.ToList();
-            context.AddRange(enumeratedEntities);
-            await SaveChanges();
+            var enumerable = entities.ToList();
+            try
+            {
+                context.AddRange(enumerable);
+                await SaveChanges();
 
-            return await GetEntities(new TSearchable() {CreatedDateTime = DateTime.Now,});
+                return await GetEntities(new TSearchable() {CreatedDateTime = DateTime.Now,});
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e,
+                    $"Exception thrown while attempting to add {enumerable.Count} entities ({typeof(TEntity).Name}).");
+                throw;
+            }
         }
 
         /// <inheritdoc />
@@ -62,11 +71,20 @@ namespace Fashionhero.Portal.DataAccess.Core
         /// <inheritdoc />
         public async Task<IEnumerable<TEntity>> UpdateEntities(IEnumerable<TEntity> entities)
         {
-            var enumeratedEntities = entities.ToList();
-            context.UpdateRange(enumeratedEntities);
-            await SaveChanges();
+            var enumerable = entities.ToList();
+            try
+            {
+                context.UpdateRange(enumerable);
+                await SaveChanges();
 
-            return await GetEntities(new TSearchable() {UpdatedDateTime = DateTime.Now,});
+                return await GetEntities(new TSearchable() {UpdatedDateTime = DateTime.Now,});
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e,
+                    $"Exception thrown while attempting to update {enumerable.Count} entities ({typeof(TEntity).Name}).");
+                throw;
+            }
         }
 
         /// <inheritdoc />

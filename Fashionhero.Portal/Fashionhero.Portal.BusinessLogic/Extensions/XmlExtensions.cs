@@ -19,7 +19,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
 
-                return taggedElement.Value;
+                return taggedElement.Value.Replace("\n", string.Empty).Trim();
             }
             catch (ArgumentException ae)
             {
@@ -47,8 +47,12 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             try
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
+                string value = taggedElement.Value;
+                if (!value.All(char.IsNumber))
+                    throw new InvalidOperationException(
+                        $"Unable to parse tag ({tag}) to {nameof(Int32)}, as value ({value}) contains non-number characters.");
 
-                bool success = int.TryParse(taggedElement.Value, out int result);
+                bool success = int.TryParse(value, out int result);
 
                 if (!success)
                     throw new InvalidCastException("Failed to cast value of xml element to int");
@@ -79,8 +83,12 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             try
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
+                string value = taggedElement.Value;
+                if (!value.All(char.IsNumber))
+                    throw new InvalidOperationException(
+                        $"Unable to parse tag ({tag}) to {nameof(Int64)}, as value ({value}) contains non-number characters.");
 
-                bool success = long.TryParse(taggedElement.Value, out long result);
+                bool success = long.TryParse(value, out long result);
 
                 if (!success)
                     throw new InvalidCastException("Failed to cast value of xml element to int");

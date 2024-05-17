@@ -27,7 +27,7 @@ namespace Fashionhero.Portal.Presentation.Core
             Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console(outputTemplate: logPattern)
                 .WriteTo.File(logPath, outputTemplate: logPattern, shared: true,
                     flushToDiskInterval: TimeSpan.FromMinutes(1), restrictedToMinimumLevel: level,
-                    retainedFileCountLimit: 14, rollingInterval: RollingInterval.Day).CreateLogger();
+                    retainedFileCountLimit: 7, rollingInterval: RollingInterval.Day).CreateLogger();
 
             services.AddLogging(x => x.AddSerilog(Log.Logger));
 

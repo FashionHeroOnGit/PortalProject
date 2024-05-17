@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Fashionhero.Portal.BusinessLogic.Extensions;
@@ -67,7 +68,7 @@ namespace Fashionhero.Portal.BusinessLogic
         public async Task UpdateInventory(Dictionary<string, string> languageXmls, string inventoryXml)
         {
             var localeProducts = await ProcessLanguageXml(languageXmls);
-            var sizes = (await GetSizes(inventoryXml)).Where(x => x.Quantity > 0).ToList();
+            var sizes = (await GetSizes(inventoryXml)).Where(x => x.Quantity != default && x.Ean != default).ToList();
             var cleanedSizes = await DiscardSizesWithDuplicateEan(sizes);
             var loadedProducts = await GetMasterProducts(inventoryXml, localeProducts, cleanedSizes);
 
@@ -139,17 +140,17 @@ namespace Fashionhero.Portal.BusinessLogic
                 databaseProduct = ClearRemovedChildren(loadedProduct, databaseProduct);
                 databaseProduct = AddNewChildren(loadedProduct, databaseProduct);
 
-                databaseProduct.Sizes = await Task.WhenAll(
-                    databaseProduct.Sizes.Select(x => MapLoadedSizesToDatabaseSize(loadedProduct.Sizes, x)));
-                databaseProduct.Locales = await Task.WhenAll(databaseProduct.Locales.Select(x =>
+                databaseProduct.Sizes = (await Task.WhenAll(
+                    databaseProduct.Sizes.Select(x => MapLoadedSizesToDatabaseSize(loadedProduct.Sizes, x)))).ToList();
+                databaseProduct.Locales = (await Task.WhenAll(databaseProduct.Locales.Select(x =>
                     MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x,
-                        loadedProduct.ReferenceId)));
+                        loadedProduct.ReferenceId)))).ToList();
                 databaseProduct.Prices =
-                    await Task.WhenAll(databaseProduct.Prices.Select(x =>
-                        MapLoadedPricesToDatabasePrice(loadedProduct.Prices, x)));
+                    (await Task.WhenAll(databaseProduct.Prices.Select(x =>
+                        MapLoadedPricesToDatabasePrice(loadedProduct.Prices, x)))).ToList();
                 databaseProduct.ExtraTags =
-                    await Task.WhenAll(databaseProduct.ExtraTags.Select(x =>
-                        MapLoadedTagToDatabaseTag(loadedProduct.ExtraTags, x)));
+                    (await Task.WhenAll(databaseProduct.ExtraTags.Select(x =>
+                        MapLoadedTagToDatabaseTag(loadedProduct.ExtraTags, x)))).ToList();
                 databaseProduct.Images = loadedProduct.Images;
 
                 databaseProduct.Manufacturer = loadedProduct.Manufacturer;
@@ -201,34 +202,99 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private IProduct AddNewChildren(IProduct loadedProduct, IProduct databaseProduct)
         {
-            var newLocaleProductReferenceIds =
-                GetExceptedList(loadedProduct.Locales, databaseProduct.Locales, x => x.ReferenceId);
-            var localeProductsList = databaseProduct.Locales.ToList();
-            localeProductsList.AddRange(loadedProduct.Locales.Where(x =>
-                newLocaleProductReferenceIds.Contains(x.ReferenceId)));
-            databaseProduct.Locales = localeProductsList;
-
-            var newSizeReferenceIds = GetExceptedList(loadedProduct.Sizes, databaseProduct.Sizes, x => x.ReferenceId);
-            var sizesList = databaseProduct.Sizes.ToList();
-            sizesList.AddRange(loadedProduct.Sizes.Where(x => newSizeReferenceIds.Contains(x.ReferenceId)));
-            databaseProduct.Sizes = sizesList;
-
-            var newTagNames = GetExceptedList(loadedProduct.ExtraTags, databaseProduct.ExtraTags, x => x.Name);
-            var tagsList = databaseProduct.ExtraTags.ToList();
-            tagsList.AddRange(loadedProduct.ExtraTags.Where(x => newTagNames.Contains(x.Name)));
-            databaseProduct.ExtraTags = tagsList;
-
-            //var newImageUrls = GetExceptedList(loadedProduct.Images, databaseProduct.Images, x => x.Url);
-            //var imagesList = databaseProduct.Images.ToList();
-            //imagesList.AddRange(loadedProduct.Images.Where(x => newImageUrls.Contains(x.Url)));
-            //databaseProduct.Images = imagesList;
-
-            var newPriceCurrencies = GetExceptedList(loadedProduct.Prices, databaseProduct.Prices, x => x.Currency);
-            var pricesList = databaseProduct.Prices.ToList();
-            pricesList.AddRange(loadedProduct.Prices.Where(x => newPriceCurrencies.Contains(x.Currency)));
-            databaseProduct.Prices = pricesList;
+            databaseProduct.Locales = AddNewLocaleProducts(loadedProduct, databaseProduct);
+            databaseProduct.Sizes = AddNewSizes(loadedProduct, databaseProduct);
+            databaseProduct.ExtraTags = AddNewTags(loadedProduct, databaseProduct);
+            //databaseProduct.Images = AddNewImages(loadedProduct, databaseProduct); // Commented, as Images are currently just overwritten.
+            databaseProduct.Prices = AddNewPrices(loadedProduct, databaseProduct);
 
             return databaseProduct;
+        }
+
+        private ICollection<IPrice> AddNewPrices(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            var currentPriceCurrencies = databaseProduct.Prices.Select(x => x.Currency).ToList();
+            var pricesList = databaseProduct.Prices.ToList();
+            if (loadedProduct.Prices.All(x => currentPriceCurrencies.Contains(x.Currency)))
+                return pricesList;
+
+            pricesList.AddRange(loadedProduct.Prices.Where(x => !currentPriceCurrencies.Contains(x.Currency)));
+
+            if (currentPriceCurrencies.Count * 2 <= pricesList.Count)
+                logger.LogWarning(
+                    $"Large growth of {nameof(Image)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
+                    $"Grew from {currentPriceCurrencies.Count} to {pricesList.Count}.");
+
+            return pricesList;
+        }
+
+        private ICollection<IImage> AddNewImages(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            var currentImageUrls = databaseProduct.Images.Select(x => x.Url).ToList();
+            var imagesList = databaseProduct.Images.ToList();
+            if (loadedProduct.Images.All(x => currentImageUrls.Contains(x.Url)))
+                return imagesList;
+
+            imagesList.AddRange(loadedProduct.Images.Where(x => !currentImageUrls.Contains(x.Url)));
+
+            if (currentImageUrls.Count * 2 <= imagesList.Count)
+                logger.LogWarning(
+                    $"Large growth of {nameof(Image)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
+                    $"Grew from {currentImageUrls.Count} to {imagesList.Count}.");
+
+            return imagesList;
+        }
+
+        private ICollection<ITag> AddNewTags(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            var currentTagNames = databaseProduct.ExtraTags.Select(x => x.Name).ToList();
+            var tagsList = databaseProduct.ExtraTags.ToList();
+            if (loadedProduct.ExtraTags.All(x => currentTagNames.Contains(x.Name)))
+                return tagsList;
+
+            tagsList.AddRange(loadedProduct.ExtraTags.Where(x => !currentTagNames.Contains(x.Name)));
+
+            if (currentTagNames.Count * 2 <= tagsList.Count)
+                logger.LogWarning(
+                    $"Large growth of {nameof(Tag)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
+                    $"Grew from {currentTagNames.Count} to {tagsList.Count}.");
+
+            return tagsList;
+        }
+
+        private ICollection<ILocaleProduct> AddNewLocaleProducts(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            var currentLocaleProductReferenceIds = databaseProduct.Locales.Select(x => x.ReferenceId).ToList();
+            var localeProductsList = databaseProduct.Locales.ToList();
+            if (loadedProduct.Locales.All(x => currentLocaleProductReferenceIds.Contains(x.ReferenceId)))
+                return localeProductsList;
+
+            localeProductsList.AddRange(loadedProduct.Locales.Where(x =>
+                !currentLocaleProductReferenceIds.Contains(x.ReferenceId)));
+
+            if (currentLocaleProductReferenceIds.Count * 2 <= localeProductsList.Count)
+                logger.LogWarning(
+                    $"Large growth of {nameof(LocaleProduct)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
+                    $"Grew from {currentLocaleProductReferenceIds.Count} to {localeProductsList.Count}.");
+            return localeProductsList;
+        }
+
+        private ICollection<ISize> AddNewSizes(IProduct loadedProduct, IProduct databaseProduct)
+        {
+            var currentSizeReferenceIds = databaseProduct.Sizes.Select(x => x.ReferenceId).ToList();
+            var sizesList = databaseProduct.Sizes.ToList();
+
+            if (loadedProduct.Sizes.All(x => currentSizeReferenceIds.Contains(x.ReferenceId)))
+                return sizesList;
+
+            sizesList.AddRange(loadedProduct.Sizes.Where(x => !currentSizeReferenceIds.Contains(x.ReferenceId)));
+
+            if (currentSizeReferenceIds.Count * 2 <= sizesList.Count)
+                logger.LogWarning(
+                    $"Large growth of {nameof(Size)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
+                    $"Grew from {currentSizeReferenceIds.Count} to {sizesList.Count}.");
+
+            return sizesList;
         }
 
         private Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
@@ -239,11 +305,12 @@ namespace Fashionhero.Portal.BusinessLogic
 
             databaseSize.Quantity = loadedSize.Quantity;
             databaseSize.LinkBase = loadedSize.LinkBase;
-            databaseSize.Ean = loadedSize.Ean; // Todo: find out if the Ean changing is valid.
             databaseSize.ModelProductNumber = loadedSize.ModelProductNumber;
             databaseSize.LinkPostFix = loadedSize.LinkPostFix;
             databaseSize.Primary = loadedSize.Primary;
             databaseSize.Secondary = loadedSize.Secondary;
+            //databaseSize.Ean = loadedSize.Ean; // Ean Should not get updated, according to Thomas.
+
 
             return Task.FromResult(databaseSize);
         }

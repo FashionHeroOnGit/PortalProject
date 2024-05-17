@@ -15,6 +15,8 @@ namespace Fashionhero.Portal.DataAccess.Core
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).HasColumnName(idName);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            //builder.Property(x => x.CreatedDateTime).ValueGeneratedOnAdd();
+            //builder.Property(x => x.UpdatedDateTime).ValueGeneratedOnAddOrUpdate();
         }
     }
 }
