@@ -22,7 +22,8 @@ namespace Fashionhero.Portal.Presentation
 
             AddModule(new DatabaseContextStartupModule<PortalDatabaseContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString(DATABASE_CONNECTION_STRING_NAME));
+                options.UseSqlite(Configuration.GetConnectionString(DATABASE_CONNECTION_STRING_NAME),
+                    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 #if DEBUG
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();

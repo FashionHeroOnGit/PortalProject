@@ -34,7 +34,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             }
         }
 
-        private static XElement GetTaggedElement(this XElement element, string tag)
+        public static XElement GetTaggedElement(this XElement element, string tag)
         {
             XElement? inner = element.Element(tag);
             if (inner == null)
@@ -47,7 +47,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             try
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
-                string value = taggedElement.Value;
+                string value = taggedElement.Value.Split('.', ',')[0];
                 if (!value.All(char.IsNumber))
                     throw new InvalidOperationException(
                         $"Unable to parse tag ({tag}) to {nameof(Int32)}, as value ({value}) contains non-number characters.");
@@ -83,7 +83,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             try
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
-                string value = taggedElement.Value;
+                string value = taggedElement.Value.TrimEnd($"X23");
                 if (!value.All(char.IsNumber))
                     throw new InvalidOperationException(
                         $"Unable to parse tag ({tag}) to {nameof(Int64)}, as value ({value}) contains non-number characters.");

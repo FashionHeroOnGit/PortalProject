@@ -53,6 +53,13 @@
         Task DeleteEntity(TSearchable searchable);
 
         /// <summary>
+        /// Deletes all the supplied entities from the database.
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        Task DeleteEntities(IEnumerable<TEntity> entities);
+
+        /// <summary>
         /// Delete the <typeparamref name="TEntity"/> with supplied <paramref name="id"/>.
         /// </summary>
         /// <param name="id">Id of the <typeparamref name="TEntity"/> to delete.</param>

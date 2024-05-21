@@ -67,27 +67,97 @@ namespace Fashionhero.Portal.BusinessLogic
         /// <inheritdoc />
         public async Task UpdateInventory(Dictionary<string, string> languageXmls, string inventoryXml)
         {
-            var localeProducts = await ProcessLanguageXml(languageXmls);
-            var sizes = (await GetSizes(inventoryXml)).Where(x => x.Quantity != default && x.Ean != default).ToList();
-            var cleanedSizes = await DiscardSizesWithDuplicateEan(sizes);
-            var loadedProducts = await GetMasterProducts(inventoryXml, localeProducts, cleanedSizes);
+            var loadedLocaleProducts = await ProcessLanguageXml(languageXmls);
+            var loadedSizes = await GetSizes(inventoryXml);
+            var cleanedLoadedSizes = await CleanLoadedSizes(loadedSizes);
+            var loadedProducts = await GetMasterProducts(inventoryXml, loadedLocaleProducts, cleanedLoadedSizes);
+            var cleanedLoadedProducts = await CleanLoadedProducts(loadedProducts);
 
             var databaseProducts = (await productManager.GetEntities(new SearchableProduct())).ToList();
-            var loadedReferenceIds = loadedProducts.Select(x => x.ReferenceId).ToList();
+            var loadedReferenceIds = cleanedLoadedProducts.Select(x => x.ReferenceId).ToList();
             var databaseReferenceIds = databaseProducts.Select(x => x.ReferenceId).ToList();
 
             var productsToUpdate = databaseProducts.Where(x => loadedReferenceIds.Contains(x.ReferenceId)).ToList();
-            var productsToAdd = loadedProducts.Where(x => !databaseReferenceIds.Contains(x.ReferenceId)).ToList();
+            var productsToAdd = cleanedLoadedProducts.Where(x => !databaseReferenceIds.Contains(x.ReferenceId))
+                .ToList();
+            var productsToDelete = databaseProducts.Where(x => !loadedReferenceIds.Contains(x.ReferenceId)).ToList();
 
             var updateReferenceIds = productsToUpdate.Select(x => x.ReferenceId).ToList();
             var loadedProductsForUpdating =
-                loadedProducts.Where(x => updateReferenceIds.Contains(x.ReferenceId)).ToList();
+                cleanedLoadedProducts.Where(x => updateReferenceIds.Contains(x.ReferenceId)).ToList();
 
             var mappedProductsToUpdate =
                 await MapLoadedProductsToDatabaseProducts(loadedProductsForUpdating, productsToUpdate);
 
+            await productManager.DeleteEntities(productsToDelete);
             await productManager.UpdateEntities(mappedProductsToUpdate.Cast<Product>());
             await productManager.AddEntities(productsToAdd.Cast<Product>());
+        }
+
+        private async Task<ICollection<IProduct>> CleanLoadedProducts(ICollection<IProduct> rawLoadedProducts)
+        {
+            var filteredLoadedProducts = rawLoadedProducts.Where(x =>
+            {
+                if (x.Sizes.Count != 0)
+                    return true;
+
+                logger.LogWarning(
+                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it failed to get any sizes attached.");
+                return false;
+            }).ToList();
+
+            return await DiscardProductsWithDuplicateLink(filteredLoadedProducts);
+        }
+
+        private Task<ICollection<IProduct>> DiscardProductsWithDuplicateLink(ICollection<IProduct> loadedProducts)
+        {
+            var linkCounter = new Dictionary<string, ICollection<IProduct>>();
+            foreach (IProduct loadedProduct in loadedProducts)
+            {
+                if (!linkCounter.ContainsKey(loadedProduct.LinkBase))
+                    linkCounter.Add(loadedProduct.LinkBase, new List<IProduct>());
+                linkCounter[loadedProduct.LinkBase].Add(loadedProduct);
+            }
+
+            var result = new List<IProduct>();
+
+            foreach (var linkCount in linkCounter)
+            {
+                if (linkCount.Value.Count > 1)
+                {
+                    string referenceIds = string.Join(", ", linkCount.Value.Skip(1).Select(x => x.ReferenceId));
+                    logger.LogWarning(
+                        $"Multiple Products with the same {nameof(Product.LinkBase)} ({linkCount.Key}) exist. " +
+                        $"Discarding all but the first found {nameof(Product)}. Discarded Reference Id's: {referenceIds}");
+                }
+
+                result.Add(linkCount.Value.First());
+            }
+
+            return Task.FromResult(result as ICollection<IProduct>);
+        }
+
+        private async Task<ICollection<ISize>> CleanLoadedSizes(ICollection<ISize> rawLoadedSizes)
+        {
+            var filteredLoadedSizes = rawLoadedSizes.Where(x =>
+            {
+                if (x.Quantity != default)
+                    return true;
+
+                logger.LogWarning(
+                    $"Discarding {nameof(Size)} ({x.ReferenceId}) from loaded data, as it has none left.");
+                return false;
+            }).Where(x =>
+            {
+                if (x.Ean != default)
+                    return true;
+
+                logger.LogWarning(
+                    $"Discarding {nameof(Size)} ({x.ReferenceId}) from loaded data, as it is missing a valid Ean number.");
+                return false;
+            }).ToList();
+
+            return await DiscardSizesWithDuplicateEan(filteredLoadedSizes);
         }
 
         private Task<ICollection<ISize>> DiscardSizesWithDuplicateEan(ICollection<ISize> sizes)
@@ -106,8 +176,9 @@ namespace Fashionhero.Portal.BusinessLogic
                 if (eanCount.Value.Count > 1)
                 {
                     string referenceIds = string.Join(", ", eanCount.Value.Skip(1).Select(x => x.ReferenceId));
-                    logger.LogWarning($"Multiple product sizes with same Ean ({eanCount.Key}) exist. " +
-                                      $"Discarding all but the first found size. Discarded Reference Id's: {referenceIds}");
+                    logger.LogWarning(
+                        $"Multiple {nameof(Product)} Sizes with same {nameof(Size.Ean)} ({eanCount.Key}) exist. " +
+                        $"Discarding all but the first found {nameof(Size)}. Discarded Reference Id's: {referenceIds}");
                 }
 
                 result.Add(eanCount.Value.First());
@@ -471,14 +542,42 @@ namespace Fashionhero.Portal.BusinessLogic
         {
             XDocument document = GetDocument(inventoryPath);
 
-            var xmlSizes = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).Where(x =>
-            {
-                XElement? element = x.Element(INVENTORY_LINK);
-                return element != null && element.Value.Contains('?');
-            }).Where(x => !x.Element(INVENTORY_EAN).IsEmptyValue());
+            var xmlSizes = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).ToList();
+            foreach (XElement xmlSize in xmlSizes)
+                ReportInvalidXmlFields(xmlSize);
 
-            var generateTasks = xmlSizes.Select(GenerateSize);
+            var generateTasks = xmlSizes.Where(ChooseSizeXmlElements).Select(GenerateSize).ToList();
             return await Task.WhenAll(generateTasks);
+        }
+
+        private void ReportInvalidXmlFields(XElement element)
+        {
+            XElement linkElement = element.GetTaggedElement(INVENTORY_LINK);
+            XElement eanElement = element.GetTaggedElement(INVENTORY_EAN);
+            XElement referenceIdElement = element.GetTaggedElement(INVENTORY_ID);
+
+            bool containsQuestionMark = linkElement.Value.Contains('?');
+            bool isEmptyEan = eanElement.IsEmptyValue();
+
+            if (containsQuestionMark && isEmptyEan)
+                logger.LogWarning(
+                    $"Xml Element ({referenceIdElement.Value}) appear to be a {nameof(Size)}, but is missing an {nameof(Size.Ean)}.");
+        }
+
+        private bool ChooseSizeXmlElements(XElement element)
+        {
+            XElement linkElement = element.GetTaggedElement(INVENTORY_LINK);
+            XElement eanElement = element.GetTaggedElement(INVENTORY_EAN);
+            XElement primarySizeElement = element.GetTaggedElement(INVENTORY_SIZE_A);
+
+            bool containsQuestionMark = linkElement.Value.Contains('?');
+            bool isEmptyEan = eanElement.IsEmptyValue();
+
+            if (containsQuestionMark && !isEmptyEan)
+                return true;
+            if (eanElement.Value.Contains($"X23"))
+                return true;
+            return !primarySizeElement.Value.Contains(',') && !containsQuestionMark && !isEmptyEan;
         }
 
         private Task<Size> GenerateSize(XElement element)
@@ -489,7 +588,7 @@ namespace Fashionhero.Portal.BusinessLogic
             {
                 Quantity = element.GetTagValueAsInt(INVENTORY_STOCK, logger),
                 LinkBase = splitLink[0],
-                LinkPostFix = $"?{splitLink[1]}",
+                LinkPostFix = splitLink.Length > 1 ? $"?{splitLink[1]}" : string.Empty,
                 Ean = element.GetTaggedValueAsLong(INVENTORY_EAN, logger),
                 ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 ModelProductNumber = element.GetTagValueAsString(INVENTORY_MODEL_PRODUCT_NUMBER, logger),

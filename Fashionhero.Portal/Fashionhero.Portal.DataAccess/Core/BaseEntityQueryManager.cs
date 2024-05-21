@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.JavaScript;
+﻿using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -91,6 +92,23 @@ namespace Fashionhero.Portal.DataAccess.Core
         public async Task DeleteEntity(TSearchable searchable)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public async Task DeleteEntities(IEnumerable<TEntity> entities)
+        {
+            var enumerable = entities.ToList();
+            try
+            {
+                context.RemoveRange(enumerable);
+                await SaveChanges();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e,
+                    $"Exception thrown while attempting to delete {enumerable.Count} entities ({typeof(TEntity).Name}).");
+                throw;
+            }
         }
 
         /// <inheritdoc />
