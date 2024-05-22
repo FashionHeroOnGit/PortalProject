@@ -90,8 +90,8 @@ namespace Fashionhero.Portal.BusinessLogic
                 await MapLoadedProductsToDatabaseProducts(loadedProductsForUpdating, productsToUpdate);
 
             await productManager.DeleteEntities(productsToDelete);
-            await productManager.UpdateEntities(mappedProductsToUpdate.Cast<Product>());
-            await productManager.AddEntities(productsToAdd.Cast<Product>());
+            await productManager.UpdateEntities(mappedProductsToUpdate.Cast<Product>().ToList());
+            await productManager.AddEntities(productsToAdd.Cast<Product>().ToList());
         }
 
         private async Task<ICollection<IProduct>> CleanLoadedProducts(ICollection<IProduct> rawLoadedProducts)
@@ -335,18 +335,18 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private ICollection<ILocaleProduct> AddNewLocaleProducts(IProduct loadedProduct, IProduct databaseProduct)
         {
-            var currentLocaleProductReferenceIds = databaseProduct.Locales.Select(x => x.ReferenceId).ToList();
+            var currentLocaleProductIsoNames = databaseProduct.Locales.Select(x => x.IsoName).ToList();
             var localeProductsList = databaseProduct.Locales.ToList();
-            if (loadedProduct.Locales.All(x => currentLocaleProductReferenceIds.Contains(x.ReferenceId)))
+            if (loadedProduct.Locales.All(x => currentLocaleProductIsoNames.Contains(x.IsoName)))
                 return localeProductsList;
 
             localeProductsList.AddRange(loadedProduct.Locales.Where(x =>
-                !currentLocaleProductReferenceIds.Contains(x.ReferenceId)));
+                !currentLocaleProductIsoNames.Contains(x.IsoName)));
 
-            if (currentLocaleProductReferenceIds.Count * 2 <= localeProductsList.Count)
+            if (currentLocaleProductIsoNames.Count * 2 <= localeProductsList.Count)
                 logger.LogWarning(
                     $"Large growth of {nameof(LocaleProduct)} on {nameof(Product)} ({databaseProduct.ReferenceId}) detected. " +
-                    $"Grew from {currentLocaleProductReferenceIds.Count} to {localeProductsList.Count}.");
+                    $"Grew from {currentLocaleProductIsoNames.Count} to {localeProductsList.Count}.");
             return localeProductsList;
         }
 
@@ -538,9 +538,9 @@ namespace Fashionhero.Portal.BusinessLogic
             };
         }
 
-        private async Task<ICollection<ISize>> GetSizes(string inventoryPath)
+        private async Task<ICollection<ISize>> GetSizes(string inventoryXml)
         {
-            XDocument document = GetDocument(inventoryPath);
+            XDocument document = GetDocument(inventoryXml);
 
             var xmlSizes = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).ToList();
             foreach (XElement xmlSize in xmlSizes)
