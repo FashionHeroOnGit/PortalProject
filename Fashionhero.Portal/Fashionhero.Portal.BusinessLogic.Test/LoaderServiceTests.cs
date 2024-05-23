@@ -62,6 +62,43 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
+        public async void ItDeletesProductsThatNoLongerExist()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItDeletesProductsThatNoLongerExist));
+            var expectedProducts = ItDeletesProductsThatNoLongerExistExpectedData();
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(
+                ItDeletesProductsThatNoLongerExistDatabaseData());
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            mockedQueryManager.Verify(x => x.DeleteEntities(It.IsAny<ICollection<Product>>()));
+            IInvocation deleteEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
+            object deleteEntitiesParameter = deleteEntitiesInvocation.Arguments[0];
+            deleteEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan));
+            const string expectedLogMessageFragment = "is missing an ean";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
         public async void ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate()
         {
             (string inventoryXml, var languageXml) =
@@ -212,26 +249,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
-        public async void ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan()
-        {
-            (string inventoryXml, var languageXml) =
-                GetSutArguments(nameof(ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan));
-            const string expectedLogMessageFragment = "is missing an ean";
-            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
-
-            await sut.UpdateInventory(languageXml, inventoryXml);
-
-            VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
-            logInvocation.Should().NotBeNull();
-        }
-
-        [Fact]
         public async void ItSavesGeneratedProducts()
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItSavesGeneratedProducts));
@@ -244,41 +261,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             IInvocation addEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
             object addEntitiesParameter = addEntitiesInvocation.Arguments[0];
             addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
-        }
-
-        [Fact]
-        public async void ItDeletesProductsThatNoLongerExist()
-        {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItDeletesProductsThatNoLongerExist));
-            var expectedProducts = ItDeletesProductsThatNoLongerExistExpectedData();
-            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
-            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(
-                ItDeletesProductsThatNoLongerExistDatabaseData());
-
-            await sut.UpdateInventory(languageXml, inventoryXml);
-
-            mockedQueryManager.Verify(x => x.DeleteEntities(It.IsAny<ICollection<Product>>()));
-            IInvocation deleteEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
-            object deleteEntitiesParameter = deleteEntitiesInvocation.Arguments[0];
-            deleteEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
-        }
-
-        private ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
-        {
-            return BuildProducts([
-                new Product() {ReferenceId = 3,},
-                new Product() {ReferenceId = 4,},
-            ]);
-        }
-
-        private ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
-        {
-            return BuildProducts([
-                new Product() {ReferenceId = 1,},
-                new Product() {ReferenceId = 2,},
-                new Product() {ReferenceId = 3,},
-                new Product() {ReferenceId = 4,},
-            ]);
         }
 
         private ICollection<Product> BareBoneData()
@@ -349,6 +331,19 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             return (inventoryXml, languageXml);
         }
 
+        private ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
+        {
+            return BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                    },
+                },
+            ]);
+        }
+
         private ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
         {
             return BuildProducts([
@@ -363,14 +358,14 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             ]);
         }
 
-        private ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
+        private ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
         {
             return BuildProducts([
                 new Product
                 {
-                    Locales = new List<ILocaleProduct>
+                    Sizes = new List<ISize>
                     {
-                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
                     },
                 },
             ]);
@@ -390,16 +385,21 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             ]);
         }
 
-        private ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
+        private ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
         {
             return BuildProducts([
-                new Product
-                {
-                    Sizes = new List<ISize>
-                    {
-                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                    },
-                },
+                new Product {ReferenceId = 1,},
+                new Product {ReferenceId = 2,},
+                new Product {ReferenceId = 3,},
+                new Product {ReferenceId = 4,},
+            ]);
+        }
+
+        private ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
+        {
+            return BuildProducts([
+                new Product {ReferenceId = 3,},
+                new Product {ReferenceId = 4,},
             ]);
         }
 
