@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Entity\" />
+    <Folder Include="Dto\" />
+    <Folder Include="Searchable\" />
+  </ItemGroup>
+
 </Project>
