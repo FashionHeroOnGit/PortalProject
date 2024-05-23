@@ -12,4 +12,14 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fashionhero.Portal.Shared.Abstraction\Fashionhero.Portal.Shared.Abstraction.csproj" />
+    <ProjectReference Include="..\Fashionhero.Portal.Shared.Model\Fashionhero.Portal.Shared.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Manager\" />
+    <Folder Include="Config\" />
+  </ItemGroup>
+
 </Project>
