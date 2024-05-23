@@ -49,6 +49,12 @@
     <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Xml\ItDeletesProductsThatNoLongerExist\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItDeletesProductsThatNoLongerExist\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
