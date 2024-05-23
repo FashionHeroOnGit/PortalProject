@@ -15,12 +15,6 @@ namespace Fashionhero.Portal.DataAccess.Manager
         }
 
         /// <inheritdoc />
-        protected override IQueryable<Product> GetBaseQuery()
-        {
-            return context.Products.AsQueryable();
-        }
-
-        /// <inheritdoc />
         protected override IQueryable<Product> AddQueryArguments(
             SearchableProduct searchable, IQueryable<Product> query)
         {
@@ -34,6 +28,12 @@ namespace Fashionhero.Portal.DataAccess.Manager
                 query = query.Where(x => x.ReferenceId == searchable.ReferenceId);
 
             return query;
+        }
+
+        /// <inheritdoc />
+        protected override IQueryable<Product> GetBaseQuery()
+        {
+            return context.Products.AsQueryable();
         }
     }
 }

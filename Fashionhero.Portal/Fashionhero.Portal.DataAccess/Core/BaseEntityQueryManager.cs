@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
+﻿using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +25,7 @@ namespace Fashionhero.Portal.DataAccess.Core
             await context.AddAsync(entity);
             await SaveChanges();
 
-            return await GetEntity(new TSearchable() {CreatedDateTime = DateTime.Now,});
+            return await GetEntity(new TSearchable {CreatedDateTime = DateTime.Now,});
         }
 
         public async Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TEntity> entities)
@@ -38,7 +36,7 @@ namespace Fashionhero.Portal.DataAccess.Core
                 context.AddRange(enumerable);
                 await SaveChanges();
 
-                return await GetEntities(new TSearchable() {CreatedDateTime = DateTime.Now,});
+                return await GetEntities(new TSearchable {CreatedDateTime = DateTime.Now,});
             }
             catch (Exception e)
             {
@@ -66,7 +64,7 @@ namespace Fashionhero.Portal.DataAccess.Core
             context.Update(entity);
             await SaveChanges();
 
-            return await GetEntity(new TSearchable() {UpdatedDateTime = DateTime.Now,});
+            return await GetEntity(new TSearchable {UpdatedDateTime = DateTime.Now,});
         }
 
         /// <inheritdoc />
@@ -78,7 +76,7 @@ namespace Fashionhero.Portal.DataAccess.Core
                 context.UpdateRange(enumerable);
                 await SaveChanges();
 
-                return await GetEntities(new TSearchable() {UpdatedDateTime = DateTime.Now,});
+                return await GetEntities(new TSearchable {UpdatedDateTime = DateTime.Now,});
             }
             catch (Exception e)
             {
@@ -117,11 +115,9 @@ namespace Fashionhero.Portal.DataAccess.Core
             throw new NotImplementedException();
         }
 
-        private async Task SaveChanges()
-        {
-            int entriesChanged = await context.SaveChangesAsync();
-            logger.LogInformation($"{entriesChanged} Changed object(s) saved to Database");
-        }
+        protected abstract IQueryable<TEntity> AddQueryArguments(TSearchable searchable, IQueryable<TEntity> query);
+
+        protected abstract IQueryable<TEntity> GetBaseQuery();
 
         private IQueryable<TEntity> BuildQuery(TSearchable searchable)
         {
@@ -146,7 +142,10 @@ namespace Fashionhero.Portal.DataAccess.Core
             return query;
         }
 
-        protected abstract IQueryable<TEntity> GetBaseQuery();
-        protected abstract IQueryable<TEntity> AddQueryArguments(TSearchable searchable, IQueryable<TEntity> query);
+        private async Task SaveChanges()
+        {
+            int entriesChanged = await context.SaveChangesAsync();
+            logger.LogInformation($"{entriesChanged} Changed object(s) saved to Database");
+        }
     }
 }

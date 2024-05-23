@@ -8,8 +8,8 @@ namespace Fashionhero.Portal.Presentation.Controllers
     [ApiController]
     public class XmlController : ControllerBase
     {
-        private readonly ILogger<XmlController> logger;
         private readonly IXmlLoaderService loader;
+        private readonly ILogger<XmlController> logger;
 
         public XmlController(ILogger<XmlController> logger, IXmlLoaderService loader)
         {

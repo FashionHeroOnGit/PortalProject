@@ -1,5 +1,4 @@
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Newtonsoft.Json;
 
 namespace Fashionhero.Portal.Shared.Model.Entity
 {

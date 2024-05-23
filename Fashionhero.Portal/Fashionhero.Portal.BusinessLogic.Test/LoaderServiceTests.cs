@@ -25,69 +25,22 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                 .ReturnsAsync(new List<Product>().AsEnumerable());
         }
 
-        private string LoadXmlFileContent(string fileName)
-        {
-            return File.ReadAllText(Path.Combine(@"..\..\..\", fileName));
-        }
-
-        private (string, Dictionary<string, string>) GetSutArguments(string testName)
-        {
-            var inventoryXmlFile = $@"Xml\{testName}\Inventory.xml";
-            var languageXmlFile = $@"Xml\{testName}\Language.xml";
-            string inventoryXml = LoadXmlFileContent(inventoryXmlFile);
-            Dictionary<string, string> languageXml = new()
-            {
-                {
-                    "en",
-                    LoadXmlFileContent(languageXmlFile)
-                },
-            };
-
-            return (inventoryXml, languageXml);
-        }
-
         [Fact]
-        public async void SaveGeneratedProducts()
+        public async void AddNewLocaleProductDuringUpdate()
         {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(SaveGeneratedProducts));
-            var expectedProducts = SaveGeneratedProductsData();
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(AddNewLocaleProductDuringUpdate));
+            languageXml.Add("da", LoadXmlFileContent($@"Xml\{nameof(AddNewLocaleProductDuringUpdate)}\Language2.xml"));
+            var expectedProducts = AddNewLocaleProductDuringUpdateData(false);
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
+                .ReturnsAsync(AddNewLocaleProductDuringUpdateData(true));
 
             await sut.UpdateInventory(languageXml, inventoryXml);
 
-            mockedQueryManager.Verify(x => x.AddEntities(It.IsAny<ICollection<Product>>()));
-            IInvocation addEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
-            object addEntitiesParameter = addEntitiesInvocation.Arguments[0];
-            addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
-        }
-
-        private ICollection<Product> SaveGeneratedProductsData()
-        {
-            return BuildProducts([new Product(),]);
-        }
-
-        private ICollection<Product> AddNewSizeDuringUpdateData(bool isDatabaseMockResult)
-        {
-            return isDatabaseMockResult
-                ? BuildProducts([
-                    new Product
-                    {
-                        Sizes = new List<ISize>
-                        {
-                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                        },
-                    },
-                ])
-                : BuildProducts([
-                    new Product
-                    {
-                        Sizes = new List<ISize>
-                        {
-                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                            TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
-                        },
-                    },
-                ]);
+            mockedQueryManager.Verify(x => x.UpdateEntities(It.IsAny<ICollection<Product>>()));
+            IInvocation updateEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
+            object updateEntitiesParameter = updateEntitiesInvocation.Arguments[0];
+            updateEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
         }
 
         [Fact]
@@ -105,6 +58,21 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             IInvocation updateEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
             object updateEntitiesParameter = updateEntitiesInvocation.Arguments[0];
             updateEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
+        }
+
+        [Fact]
+        public async void SaveGeneratedProducts()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(SaveGeneratedProducts));
+            var expectedProducts = SaveGeneratedProductsData();
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            mockedQueryManager.Verify(x => x.AddEntities(It.IsAny<ICollection<Product>>()));
+            IInvocation addEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
+            object addEntitiesParameter = addEntitiesInvocation.Arguments[0];
+            addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
         }
 
         private ICollection<Product> AddNewLocaleProductDuringUpdateData(bool isDatabaseMockResult)
@@ -126,6 +94,30 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                         {
                             TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
                             TestEntitiesBuilder.BuildLocaleProduct(1, 1, "da", "Horse X - T", "DA", "BLACK"),
+                        },
+                    },
+                ]);
+        }
+
+        private ICollection<Product> AddNewSizeDuringUpdateData(bool isDatabaseMockResult)
+        {
+            return isDatabaseMockResult
+                ? BuildProducts([
+                    new Product
+                    {
+                        Sizes = new List<ISize>
+                        {
+                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                        },
+                    },
+                ])
+                : BuildProducts([
+                    new Product
+                    {
+                        Sizes = new List<ISize>
+                        {
+                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                            TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
                         },
                     },
                 ]);
@@ -173,22 +165,30 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             }).ToList();
         }
 
-        [Fact]
-        public async void AddNewLocaleProductDuringUpdate()
+        private (string, Dictionary<string, string>) GetSutArguments(string testName)
         {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(AddNewLocaleProductDuringUpdate));
-            languageXml.Add("da", LoadXmlFileContent($@"Xml\{nameof(AddNewLocaleProductDuringUpdate)}\Language2.xml"));
-            var expectedProducts = AddNewLocaleProductDuringUpdateData(false);
-            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
-            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
-                .ReturnsAsync(AddNewLocaleProductDuringUpdateData(true));
+            var inventoryXmlFile = $@"Xml\{testName}\Inventory.xml";
+            var languageXmlFile = $@"Xml\{testName}\Language.xml";
+            string inventoryXml = LoadXmlFileContent(inventoryXmlFile);
+            Dictionary<string, string> languageXml = new()
+            {
+                {
+                    "en",
+                    LoadXmlFileContent(languageXmlFile)
+                },
+            };
 
-            await sut.UpdateInventory(languageXml, inventoryXml);
+            return (inventoryXml, languageXml);
+        }
 
-            mockedQueryManager.Verify(x => x.UpdateEntities(It.IsAny<ICollection<Product>>()));
-            IInvocation updateEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
-            object updateEntitiesParameter = updateEntitiesInvocation.Arguments[0];
-            updateEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
+        private string LoadXmlFileContent(string fileName)
+        {
+            return File.ReadAllText(Path.Combine(@"..\..\..\", fileName));
+        }
+
+        private ICollection<Product> SaveGeneratedProductsData()
+        {
+            return BuildProducts([new Product(),]);
         }
     }
 }
