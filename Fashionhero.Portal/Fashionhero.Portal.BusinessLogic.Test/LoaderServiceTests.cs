@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace Fashionhero.Portal.BusinessLogic.Test
 {
@@ -26,14 +27,15 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
-        public async void AddNewLocaleProductDuringUpdate()
+        public async void ItAddsNewLocaleProductDuringUpdate()
         {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(AddNewLocaleProductDuringUpdate));
-            languageXml.Add("da", LoadXmlFileContent($@"Xml\{nameof(AddNewLocaleProductDuringUpdate)}\Language2.xml"));
-            var expectedProducts = AddNewLocaleProductDuringUpdateData(false);
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItAddsNewLocaleProductDuringUpdate));
+            languageXml.Add("da",
+                LoadXmlFileContent($@"Xml\{nameof(ItAddsNewLocaleProductDuringUpdate)}\Language2.xml"));
+            var expectedProducts = ItAddsNewLocaleProductDuringUpdateData(false);
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
             mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
-                .ReturnsAsync(AddNewLocaleProductDuringUpdateData(true));
+                .ReturnsAsync(ItAddsNewLocaleProductDuringUpdateData(true));
 
             await sut.UpdateInventory(languageXml, inventoryXml);
 
@@ -44,13 +46,13 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
-        public async void AddNewSizeDuringUpdate()
+        public async void ItAddsNewSizeDuringUpdate()
         {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(AddNewSizeDuringUpdate));
-            var expectedProducts = AddNewSizeDuringUpdateData(false);
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItAddsNewSizeDuringUpdate));
+            var expectedProducts = ItAddsNewSizeDuringUpdateData(false);
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
             mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
-                .ReturnsAsync(AddNewSizeDuringUpdateData(true));
+                .ReturnsAsync(ItAddsNewSizeDuringUpdateData(true));
 
             await sut.UpdateInventory(languageXml, inventoryXml);
 
@@ -61,10 +63,165 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
-        public async void SaveGeneratedProducts()
+        public async void ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate()
         {
-            (string inventoryXml, var languageXml) = GetSutArguments(nameof(SaveGeneratedProducts));
-            var expectedProducts = SaveGeneratedProductsData();
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate));
+            languageXml.Add("da",
+                LoadXmlFileContent(
+                    $@"Xml\{nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate)}\Language2.xml"));
+            languageXml.Add("de",
+                LoadXmlFileContent(
+                    $@"Xml\{nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate)}\Language3.xml"));
+            const string expectedLogMessageFragment = "large growth";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(BareBoneData());
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        private ICollection<Product> BareBoneData()
+        {
+            return BuildProducts([new Product(),]);
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenManySizesAreAttachedDuringUpdate()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenManySizesAreAttachedDuringUpdate));
+
+            const string expectedLogMessageFragment = "large growth";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(BareBoneData());
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated));
+
+            const string expectedLogMessageFragment = "multiple Products with the same";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(BareBoneData());
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated));
+
+            const string expectedLogMessageFragment = "sizes with same";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+            mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(BareBoneData());
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenNoSizesGetsAttached()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItLogsWarningWhenNoSizesGetsAttached));
+            const string expectedLogMessageFragment = "sizes attached";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenSizeDoesNotHaveValidEan()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItLogsWarningWhenSizeDoesNotHaveValidEan));
+            const string expectedLogMessageFragment = "missing a valid ean";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenSizeHasNoneLeft()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItLogsWarningWhenSizeHasNoneLeft));
+            const string expectedLogMessageFragment = "has none left";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItSavesGeneratedProducts()
+        {
+            (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItSavesGeneratedProducts));
+            var expectedProducts = BareBoneData();
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
 
             await sut.UpdateInventory(languageXml, inventoryXml);
@@ -73,54 +230,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             IInvocation addEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
             object addEntitiesParameter = addEntitiesInvocation.Arguments[0];
             addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
-        }
-
-        private ICollection<Product> AddNewLocaleProductDuringUpdateData(bool isDatabaseMockResult)
-        {
-            return isDatabaseMockResult
-                ? BuildProducts([
-                    new Product
-                    {
-                        Locales = new List<ILocaleProduct>
-                        {
-                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
-                        },
-                    },
-                ])
-                : BuildProducts([
-                    new Product
-                    {
-                        Locales = new List<ILocaleProduct>
-                        {
-                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
-                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "da", "Horse X - T", "DA", "BLACK"),
-                        },
-                    },
-                ]);
-        }
-
-        private ICollection<Product> AddNewSizeDuringUpdateData(bool isDatabaseMockResult)
-        {
-            return isDatabaseMockResult
-                ? BuildProducts([
-                    new Product
-                    {
-                        Sizes = new List<ISize>
-                        {
-                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                        },
-                    },
-                ])
-                : BuildProducts([
-                    new Product
-                    {
-                        Sizes = new List<ISize>
-                        {
-                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                            TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
-                        },
-                    },
-                ]);
         }
 
         private ICollection<Product> BuildProducts(ICollection<Product> products)
@@ -181,14 +290,69 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             return (inventoryXml, languageXml);
         }
 
+        private ICollection<Product> ItAddsNewLocaleProductDuringUpdateData(bool isDatabaseMockResult)
+        {
+            return isDatabaseMockResult
+                ? BuildProducts([
+                    new Product
+                    {
+                        Locales = new List<ILocaleProduct>
+                        {
+                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                        },
+                    },
+                ])
+                : BuildProducts([
+                    new Product
+                    {
+                        Locales = new List<ILocaleProduct>
+                        {
+                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                            TestEntitiesBuilder.BuildLocaleProduct(1, 1, "da", "Horse X - T", "DA", "BLACK"),
+                        },
+                    },
+                ]);
+        }
+
+        private ICollection<Product> ItAddsNewSizeDuringUpdateData(bool isDatabaseMockResult)
+        {
+            return isDatabaseMockResult
+                ? BuildProducts([
+                    new Product
+                    {
+                        Sizes = new List<ISize>
+                        {
+                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                        },
+                    },
+                ])
+                : BuildProducts([
+                    new Product
+                    {
+                        Sizes = new List<ISize>
+                        {
+                            TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                            TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
+                        },
+                    },
+                ]);
+        }
+
         private string LoadXmlFileContent(string fileName)
         {
             return File.ReadAllText(Path.Combine(@"..\..\..\", fileName));
         }
 
-        private ICollection<Product> SaveGeneratedProductsData()
+        /// <summary>
+        ///     Found here:
+        ///     https://stackoverflow.com/questions/62091109/how-to-verify-log-message-in-unit-testing-for-a-passing-test
+        /// </summary>
+        private void VerifyLogWarningCalled()
         {
-            return BuildProducts([new Product(),]);
+            mockedLogger.Verify(
+                x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Warning), It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((obj, type) => true), It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception?, string>>((obj, type) => true)), Times.AtLeastOnce());
         }
     }
 }

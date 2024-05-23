@@ -40,25 +40,73 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Xml\AddNewLocaleProductDuringUpdate\Inventory.xml">
+    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\AddNewLocaleProductDuringUpdate\Language2.xml">
+    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Language2.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\AddNewLocaleProductDuringUpdate\Language.xml">
+    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\SaveGeneratedProducts\Inventory.xml">
+    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\SaveGeneratedProducts\Language.xml">
+    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language3.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\AddNewSizeDuringUpdate\Inventory.xml">
+    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language2.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\AddNewSizeDuringUpdate\Language.xml">
+    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenNoSizesGetsAttached\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenNoSizesGetsAttached\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenSizeDoesNotHaveValidEan\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenSizeDoesNotHaveValidEan\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenSizeHasNoneLeft\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenSizeHasNoneLeft\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItSavesGeneratedProducts\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItSavesGeneratedProducts\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItAddsNewSizeDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItAddsNewSizeDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

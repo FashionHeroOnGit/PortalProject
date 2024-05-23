@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<products>
+	<product>
+		<id>1</id>
+		<link>someLink/</link>
+		<image_link>someImage/</image_link>
+		<condition></condition>
+		<availability>in stock</availability>
+		<regular_price>449</regular_price>
+		<sale_price></sale_price>
+		<price_eur>60,15 EUR</price_eur>
+		<sale_price_eur></sale_price_eur>
+		<price_sek>704,73 SEK</price_sek>
+		<sale_price_sek></sale_price_sek>
+		<price_pln>256,63 PLN</price_pln>
+		<sale_price_pln></sale_price_pln>
+		<mpn>some-model-number</mpn>
+		<brand>Horse</brand>
+		<gtin></gtin>
+		<stock>20</stock>
+		<size-a>S, M, L, XL, 2XL, T</size-a>
+		<size-b></size-b>
+		<spartoo-kode></spartoo-kode>
+		<product_category>Cat</product_category>
+	</product>
+	
+	<product>
+		<id>2</id>
+		<link>someLink/?attribute_pa_stoerrelser=T</link>
+		<image_link>someImage/</image_link>
+		<condition></condition>
+		<availability>in stock</availability>
+		<regular_price>449</regular_price>
+		<sale_price></sale_price>
+		<price_eur>60,15 EUR</price_eur>
+		<sale_price_eur></sale_price_eur>
+		<price_sek>704,73 SEK</price_sek>
+		<sale_price_sek></sale_price_sek>
+		<price_pln>256,63 PLN</price_pln>
+		<sale_price_pln></sale_price_pln>
+		<mpn>some-model-number</mpn>
+		<brand>Horse</brand>
+		<gtin>5769403877380</gtin>
+		<stock>1</stock>
+		<size-a>T</size-a>
+		<size-b></size-b>
+		<spartoo-kode></spartoo-kode>
+		<product_category>Cat</product_category>
+	</product>
+
+	<product>
+		<id>3</id>
+		<link>someLink/?attribute_pa_stoerrelser=T</link>
+		<image_link>someImage/</image_link>
+		<condition></condition>
+		<availability>in stock</availability>
+		<regular_price>449</regular_price>
+		<sale_price></sale_price>
+		<price_eur>60,15 EUR</price_eur>
+		<sale_price_eur></sale_price_eur>
+		<price_sek>704,73 SEK</price_sek>
+		<sale_price_sek></sale_price_sek>
+		<price_pln>256,63 PLN</price_pln>
+		<sale_price_pln></sale_price_pln>
+		<mpn>some-model-number</mpn>
+		<brand>Horse</brand>
+		<gtin>1269403877380</gtin>
+		<stock>1</stock>
+		<size-a>T</size-a>
+		<size-b></size-b>
+		<spartoo-kode></spartoo-kode>
+		<product_category>Cat</product_category>
+	</product>
+
+	<product>
+		<id>4</id>
+		<link>someLink/?attribute_pa_stoerrelser=T</link>
+		<image_link>someImage/</image_link>
+		<condition></condition>
+		<availability>in stock</availability>
+		<regular_price>449</regular_price>
+		<sale_price></sale_price>
+		<price_eur>60,15 EUR</price_eur>
+		<sale_price_eur></sale_price_eur>
+		<price_sek>704,73 SEK</price_sek>
+		<sale_price_sek></sale_price_sek>
+		<price_pln>256,63 PLN</price_pln>
+		<sale_price_pln></sale_price_pln>
+		<mpn>some-model-number</mpn>
+		<brand>Horse</brand>
+		<gtin>3569403877380</gtin>
+		<stock>1</stock>
+		<size-a>T</size-a>
+		<size-b></size-b>
+		<spartoo-kode></spartoo-kode>
+		<product_category>Cat</product_category>
+	</product>
+
+	<product>
+		<id>5</id>
+		<link>someLink/?attribute_pa_stoerrelser=T</link>
+		<image_link>someImage/</image_link>
+		<condition></condition>
+		<availability>in stock</availability>
+		<regular_price>449</regular_price>
+		<sale_price></sale_price>
+		<price_eur>60,15 EUR</price_eur>
+		<sale_price_eur></sale_price_eur>
+		<price_sek>704,73 SEK</price_sek>
+		<sale_price_sek></sale_price_sek>
+		<price_pln>256,63 PLN</price_pln>
+		<sale_price_pln></sale_price_pln>
+		<mpn>some-model-number</mpn>
+		<brand>Horse</brand>
+		<gtin>4569403877380</gtin>
+		<stock>1</stock>
+		<size-a>T</size-a>
+		<size-b></size-b>
+		<spartoo-kode></spartoo-kode>
+		<product_category>Cat</product_category>
+	</product>
+</products>
+	
