@@ -55,6 +55,12 @@
     <None Update="Xml\ItDeletesProductsThatNoLongerExist\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Xml\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

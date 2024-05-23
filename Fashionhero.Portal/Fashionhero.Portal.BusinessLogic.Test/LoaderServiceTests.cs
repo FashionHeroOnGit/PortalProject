@@ -212,6 +212,26 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
+        public async void ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan));
+            const string expectedLogMessageFragment = "is missing an ean";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
         public async void ItSavesGeneratedProducts()
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItSavesGeneratedProducts));

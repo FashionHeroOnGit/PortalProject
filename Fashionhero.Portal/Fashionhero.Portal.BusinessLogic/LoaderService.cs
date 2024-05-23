@@ -595,7 +595,6 @@ namespace Fashionhero.Portal.BusinessLogic
             databaseSize.Secondary = loadedSize.Secondary;
             //databaseSize.Ean = loadedSize.Ean; // Ean Should not get updated, according to Thomas.
 
-
             return Task.FromResult(databaseSize);
         }
 

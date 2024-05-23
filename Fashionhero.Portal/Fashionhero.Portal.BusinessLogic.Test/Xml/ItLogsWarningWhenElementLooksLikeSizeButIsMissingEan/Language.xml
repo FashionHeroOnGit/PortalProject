@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<products>
+	<product>
+		<id>1</id>
+		<title>Horse X - T</title>
+		<description><![CDATA[]]></description>
+		<item_group_id>1</item_group_id>
+		<product_type>One</product_type>
+		<product_type_local>One &gt; Two &gt; Three</product_type_local>
+		<color>BLACK</color>
+		<gender></gender>
+		<materiale>Test</materiale>
+		<country_of_origin>EN</country_of_origin>
+	</product>
+</products>
