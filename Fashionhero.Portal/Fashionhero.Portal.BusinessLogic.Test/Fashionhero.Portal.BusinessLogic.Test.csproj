@@ -40,85 +40,97 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Language2.xml">
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Language2.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItAddsNewLocaleProductDuringUpdate\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItDeletesProductsThatNoLongerExist\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItDeletesProductsThatNoLongerExist\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItDeletesProductsThatNoLongerExist\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItDeletesProductsThatNoLongerExist\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language3.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language3.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language2.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language2.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenNoSizesGetsAttached\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenNoSizesGetsAttached\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenNoSizesGetsAttached\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenNoSizesGetsAttached\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenSizeDoesNotHaveValidEan\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenSizeDoesNotHaveValidEan\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenSizeHasNoneLeft\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeDoesNotHaveValidEan\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItLogsWarningWhenSizeHasNoneLeft\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeDoesNotHaveValidEan\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItSavesGeneratedProducts\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeHasNoneLeft\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItSavesGeneratedProducts\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeHasNoneLeft\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItAddsNewSizeDuringUpdate\Inventory.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenTagIsDiscardedDueToEmptyValue\Inventory.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Xml\ItAddsNewSizeDuringUpdate\Language.xml">
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenTagIsDiscardedDueToEmptyValue\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItSavesGeneratedProducts\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItSavesGeneratedProducts\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewSizeDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewSizeDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

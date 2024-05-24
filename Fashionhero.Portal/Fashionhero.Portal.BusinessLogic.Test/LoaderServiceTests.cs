@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace Fashionhero.Portal.BusinessLogic.Test
 {
@@ -25,12 +26,23 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                 .ReturnsAsync(new List<Product>().AsEnumerable());
         }
 
+        private static string BuildInventoryTestFilePath(string testName)
+        {
+            return $@"Xml\{nameof(LoaderServiceTests)}\{testName}\Inventory.xml";
+        }
+
+        private static string BuildLanguageTestFilePath(string testName, int fileNumber = 0)
+        {
+            return
+                $@"Xml\{nameof(LoaderServiceTests)}\{testName}\Language{(fileNumber != default ? fileNumber.ToString() : "")}.xml";
+        }
+
         [Fact]
         public async void ItAddsNewLocaleProductDuringUpdate()
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItAddsNewLocaleProductDuringUpdate));
             languageXml.Add("da",
-                LoadXmlFileContent($@"Xml\{nameof(ItAddsNewLocaleProductDuringUpdate)}\Language2.xml"));
+                LoadXmlFileContent(BuildLanguageTestFilePath(nameof(ItAddsNewLocaleProductDuringUpdate), 2)));
             var expectedProducts = ItAddsNewLocaleProductDuringUpdateExpectedData();
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
             mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
@@ -42,6 +54,46 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             IInvocation updateEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
             object updateEntitiesParameter = updateEntitiesInvocation.Arguments[0];
             updateEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenTagIsDiscardedDueToEmptyValue()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenTagIsDiscardedDueToEmptyValue));
+            const string expectedLogMessageFragment = "value is empty";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice));
+            const string expectedLogMessageFragment = "needs either a normal or discount listing price to be valid";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
         }
 
         [Fact]
@@ -105,10 +157,10 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                 GetSutArguments(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate));
             languageXml.Add("da",
                 LoadXmlFileContent(
-                    $@"Xml\{nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate)}\Language2.xml"));
+                    BuildLanguageTestFilePath(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate), 2)));
             languageXml.Add("de",
                 LoadXmlFileContent(
-                    $@"Xml\{nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate)}\Language3.xml"));
+                    BuildLanguageTestFilePath(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate), 3)));
             const string expectedLogMessageFragment = "large growth";
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
             mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>())).ReturnsAsync(BareBoneData());
@@ -304,12 +356,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                             CurrencyCode.PLN),
                     }
                     : x.Prices;
-                var tags = x.ExtraTags.Count == 0
-                    ? new List<ITag>
-                    {
-                        TestEntitiesBuilder.BuildTag("spartoo-kode", x.ReferenceId != default ? x.ReferenceId : 1),
-                    }
-                    : x.ExtraTags;
+                var tags = x.ExtraTags;
                 return TestEntitiesBuilder.BuildProduct(x.ReferenceId != default ? x.ReferenceId : 1, images,
                     localeProducts, sizes, prices, tags, !string.IsNullOrWhiteSpace(x.Brand) ? x.Brand : "Horse");
             }).ToList();
@@ -317,8 +364,8 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private (string, Dictionary<string, string>) GetSutArguments(string testName)
         {
-            var inventoryXmlFile = $@"Xml\{testName}\Inventory.xml";
-            var languageXmlFile = $@"Xml\{testName}\Language.xml";
+            string inventoryXmlFile = BuildInventoryTestFilePath(testName);
+            string languageXmlFile = BuildLanguageTestFilePath(testName);
             string inventoryXml = LoadXmlFileContent(inventoryXmlFile);
             Dictionary<string, string> languageXml = new()
             {
