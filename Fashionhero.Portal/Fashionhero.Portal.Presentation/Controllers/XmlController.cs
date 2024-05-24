@@ -1,4 +1,7 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
+﻿using System.Text;
+using System.Xml;
+using System.Xml.Linq;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Microsoft.AspNetCore.Mvc;
 using FileIO = System.IO.File;
 
@@ -9,12 +12,14 @@ namespace Fashionhero.Portal.Presentation.Controllers
     public class XmlController : ControllerBase
     {
         private readonly IXmlLoaderService loader;
+        private readonly IXmlExportService exporter;
         private readonly ILogger<XmlController> logger;
 
-        public XmlController(ILogger<XmlController> logger, IXmlLoaderService loader)
+        public XmlController(ILogger<XmlController> logger, IXmlLoaderService loader, IXmlExportService exporter)
         {
             this.logger = logger;
             this.loader = loader;
+            this.exporter = exporter;
         }
 
         [HttpPost]
@@ -42,10 +47,34 @@ namespace Fashionhero.Portal.Presentation.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetSpartooFile()
+        {
+            const string contentType = "text/xml";
+            var fileName = $"SpartooImport-{DateOnly.FromDateTime(DateTime.Now).ToShortDateString()}.xml";
+
+            try
+            {
+                XDocument document = await exporter.GenerateXmlDocument();
+
+                if (Encoding.UTF8 is not UTF8Encoding encoding)
+                    throw new Exception($"Failed to create UTF-8 Encoding object.");
+
+                byte[] bytes = encoding.GetBytes(document.ToString());
+
+                return File(bytes, contentType, fileName);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Error occured during execution of {nameof(GetSpartooFile)}.");
+                throw;
+            }
+        }
+
         private static string GetIsoName(string languagePath)
         {
             string[] split = new FileInfo(languagePath).Name.Split('_');
-            return split.Length == 1 ? "dk" : split[0];
+            return split.Length == 1 ? Shared.Model.Constants.DANISH_ISO_NAME : split[0];
         }
 
         public class UpdateInventoryArguments

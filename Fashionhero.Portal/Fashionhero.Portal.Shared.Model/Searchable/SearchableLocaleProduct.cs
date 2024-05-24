@@ -29,7 +29,7 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
         public string Material { get; set; }
 
         /// <inheritdoc />
-        public string? Gender { get; set; }
+        public string Gender { get; set; }
 
         /// <inheritdoc />
         public string Colour { get; set; }

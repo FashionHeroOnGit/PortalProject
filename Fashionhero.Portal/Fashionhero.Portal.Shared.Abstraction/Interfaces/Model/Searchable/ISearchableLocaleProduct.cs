@@ -13,7 +13,7 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
         string LocalType { get; set; }
         string CountryOrigin { get; set; }
         string Material { get; set; }
-        string? Gender { get; set; }
+        string Gender { get; set; }
         string Colour { get; set; }
     }
 }
