@@ -268,6 +268,32 @@ namespace Fashionhero.Portal.BusinessLogic
             return databaseProduct;
         }
 
+        private ICollection<ITag> DiscardEmptyTags(ICollection<ITag> originalTags)
+        {
+            return originalTags.Where(x =>
+            {
+                if (!string.IsNullOrWhiteSpace(x.Value))
+                    return true;
+
+                logger.LogWarning(
+                    $"Discarding {nameof(Tag)} ({x.Name}) for {nameof(Product)} ({x.ReferenceId}) as the {nameof(Tag.Value)} is empty.");
+                return false;
+            }).ToList();
+        }
+
+        private ICollection<IPrice> DiscardInvalidPrices(ICollection<IPrice> originalPrices)
+        {
+            return originalPrices.Where(x =>
+            {
+                if (x.NormalSell != 0 || (x.Discount != null && x.Discount != 0))
+                    return true;
+
+                logger.LogWarning(
+                    $"Discarding {nameof(Price)} ({x.Currency}) for {nameof(Product)} ({x.ReferenceId}), as it needs either a normal or discount listing price to be valid.");
+                return false;
+            }).ToList();
+        }
+
         private Task<ICollection<IProduct>> DiscardProductsWithDuplicateLink(ICollection<IProduct> loadedProducts)
         {
             var linkCounter = new Dictionary<string, ICollection<IProduct>>();
@@ -404,7 +430,7 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private ICollection<ITag> GetExtraTags(XElement element)
         {
-            return new List<ITag>
+            var tags = new List<ITag>
             {
                 new Tag
                 {
@@ -413,6 +439,8 @@ namespace Fashionhero.Portal.BusinessLogic
                     ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
             };
+
+            return DiscardEmptyTags(tags);
         }
 
         private ICollection<IImage> GetImages(XElement element)
@@ -447,7 +475,7 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private ICollection<IPrice> GetPrices(XElement element)
         {
-            return new List<IPrice>
+            var prices = new List<IPrice>
             {
                 new Price
                 {
@@ -478,6 +506,8 @@ namespace Fashionhero.Portal.BusinessLogic
                     ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
                 },
             };
+
+            return DiscardInvalidPrices(prices);
         }
 
         private async Task<ICollection<ISize>> GetSizes(string inventoryXml)
