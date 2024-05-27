@@ -1,4 +1,5 @@
-﻿using Fashionhero.Portal.BusinessLogic.Test.Core;
+﻿using Fashionhero.Portal.BusinessLogic.Services;
+using Fashionhero.Portal.BusinessLogic.Test.Core;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;

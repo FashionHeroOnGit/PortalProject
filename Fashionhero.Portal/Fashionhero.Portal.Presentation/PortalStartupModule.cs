@@ -1,4 +1,4 @@
-﻿using Fashionhero.Portal.BusinessLogic;
+﻿using Fashionhero.Portal.BusinessLogic.Services;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Startup;
 

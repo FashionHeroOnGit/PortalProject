@@ -12,44 +12,6 @@ namespace Fashionhero.Portal.BusinessLogic
 {
     public class LoaderService : IXmlLoaderService
     {
-        private const string LOCALE_ROOT = "products";
-        private const string LOCALE_SINGLE_PRODUCT = "product";
-        private const string LOCALE_ID = "id";
-        private const string LOCALE_TITLE = "title";
-        private const string LOCALE_DESCRIPTION = "description";
-        private const string LOCALE_ITEM_GROUP_ID = "item_group_id";
-        private const string LOCALE_PRODUCT_TYPE = "product_type";
-        private const string LOCALE_PRODUCT_TYPE_LOCAL = "product_type_local";
-        private const string LOCALE_COLOR = "color";
-        private const string LOCALE_GENDER = "gender";
-        private const string LOCALE_MATERIALE = "materiale";
-        private const string LOCALE_COUNTRY_OF_ORIGIN = "country_of_origin";
-
-        private const string INVENTORY_ROOT = "products";
-        private const string INVENTORY_SINGLE_PRODUCT = "product";
-        private const string INVENTORY_ID = "id";
-        private const string INVENTORY_LINK = "link";
-        private const string INVENTORY_IMAGE_LINK = "image_link";
-
-        private const string
-            INVENTORY_AVAILABILITY = "availability"; // Unused as 'Availability' is calculated from stock
-
-        private const string INVENTORY_REGULAR_PRICE = "regular_price";
-        private const string INVENTORY_SALE_PRICE = "sale_price";
-        private const string INVENTORY_PRICE_EUR = "price_eur";
-        private const string INVENTORY_SALE_PRICE_EUR = "sale_price_eur";
-        private const string INVENTORY_PRICE_SEK = "price_sek";
-        private const string INVENTORY_SALE_PRICE_SEK = "sale_price_sek";
-        private const string INVENTORY_PRICE_PLN = "price_pln";
-        private const string INVENTORY_SALE_PRICE_PLN = "sale_price_pln";
-        private const string INVENTORY_MODEL_PRODUCT_NUMBER = "mpn";
-        private const string INVENTORY_BRAND = "brand";
-        private const string INVENTORY_EAN = "gtin";
-        private const string INVENTORY_STOCK = "stock";
-        private const string INVENTORY_SIZE_A = "size-a";
-        private const string INVENTORY_SIZE_B = "size-b";
-        private const string INVENTORY_SPARTOO_KODE = "spartoo-kode";
-        private const string INVENTORY_PRODUCT_CATEGORY = "product_category";
         private readonly ILogger<LoaderService> logger;
         private readonly IEntityQueryManager<Product, SearchableProduct> productManager;
 
@@ -190,9 +152,9 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private bool ChooseSizeXmlElements(XElement element)
         {
-            XElement linkElement = element.GetTaggedElement(INVENTORY_LINK);
-            XElement eanElement = element.GetTaggedElement(INVENTORY_EAN);
-            XElement primarySizeElement = element.GetTaggedElement(INVENTORY_SIZE_A);
+            XElement linkElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_LINK);
+            XElement eanElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_EAN);
+            XElement primarySizeElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_SIZE_A);
 
             bool containsQuestionMark = linkElement.Value.Contains('?');
             bool isEmptyEan = eanElement.IsEmptyValue();
@@ -354,16 +316,16 @@ namespace Fashionhero.Portal.BusinessLogic
             return Task.FromResult(new LocaleProduct
             {
                 IsoName = isoName,
-                ReferenceId = element.GetTagValueAsInt(LOCALE_ID, logger),
-                Title = element.GetTagValueAsString(LOCALE_TITLE, logger),
-                Description = element.GetTagValueAsString(LOCALE_DESCRIPTION, logger),
-                ItemGroupId = element.GetTagValueAsInt(LOCALE_ITEM_GROUP_ID, logger),
-                Type = element.GetTagValueAsString(LOCALE_PRODUCT_TYPE, logger),
-                LocalType = element.GetTagValueAsString(LOCALE_PRODUCT_TYPE_LOCAL, logger),
-                Colour = element.GetTagValueAsString(LOCALE_COLOR, logger),
-                Gender = element.GetTagValueAsString(LOCALE_GENDER, logger),
-                Material = element.GetTagValueAsString(LOCALE_MATERIALE, logger),
-                CountryOrigin = element.GetTagValueAsString(LOCALE_COUNTRY_OF_ORIGIN, logger),
+                ReferenceId = element.GetTagValueAsInt(XmlTagConstants.LOCALE_ID, logger),
+                Title = element.GetTagValueAsString(XmlTagConstants.LOCALE_TITLE, logger),
+                Description = element.GetTagValueAsString(XmlTagConstants.LOCALE_DESCRIPTION, logger),
+                ItemGroupId = element.GetTagValueAsInt(XmlTagConstants.LOCALE_ITEM_GROUP_ID, logger),
+                Type = element.GetTagValueAsString(XmlTagConstants.LOCALE_PRODUCT_TYPE, logger),
+                LocalType = element.GetTagValueAsString(XmlTagConstants.LOCALE_PRODUCT_TYPE_LOCAL, logger),
+                Colour = element.GetTagValueAsString(XmlTagConstants.LOCALE_COLOR, logger),
+                Gender = element.GetTagValueAsString(XmlTagConstants.LOCALE_GENDER, logger),
+                Material = element.GetTagValueAsString(XmlTagConstants.LOCALE_MATERIALE, logger),
+                CountryOrigin = element.GetTagValueAsString(XmlTagConstants.LOCALE_COUNTRY_OF_ORIGIN, logger),
             });
         }
 
@@ -372,7 +334,8 @@ namespace Fashionhero.Portal.BusinessLogic
         {
             XDocument document = GetDocument(isoLanguageXml.Value);
 
-            var xmlLocaleProducts = document.Elements(LOCALE_ROOT).Elements(LOCALE_SINGLE_PRODUCT);
+            var xmlLocaleProducts = document.Elements(XmlTagConstants.LOCALE_ROOT)
+                .Elements(XmlTagConstants.LOCALE_SINGLE_PRODUCT);
             var generateTasks = xmlLocaleProducts.Select(x => GenerateLocaleProduct(x, isoLanguageXml.Key));
             return await Task.WhenAll(generateTasks);
         }
@@ -380,14 +343,14 @@ namespace Fashionhero.Portal.BusinessLogic
         private Task<Product> GenerateProduct(
             XElement element, ICollection<ILocaleProduct> localeProducts, ICollection<ISize> sizes)
         {
-            string[] splitLink = element.GetTagValueAsString(INVENTORY_LINK, logger).Split('?');
+            string[] splitLink = element.GetTagValueAsString(XmlTagConstants.INVENTORY_LINK, logger).Split('?');
             var newProduct = new Product
             {
-                ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 LinkBase = splitLink[0],
-                Brand = element.GetTagValueAsString(INVENTORY_BRAND, logger),
-                Category = element.GetTagValueAsString(INVENTORY_PRODUCT_CATEGORY, logger),
-                Manufacturer = element.GetTagValueAsString(INVENTORY_BRAND, logger),
+                Brand = element.GetTagValueAsString(XmlTagConstants.INVENTORY_BRAND, logger),
+                Category = element.GetTagValueAsString(XmlTagConstants.INVENTORY_PRODUCT_CATEGORY, logger),
+                Manufacturer = element.GetTagValueAsString(XmlTagConstants.INVENTORY_BRAND, logger),
                 Sizes = sizes.Where(x => x.LinkBase == splitLink[0]).ToList(),
                 ExtraTags = GetExtraTags(element),
                 Images = GetImages(element),
@@ -401,18 +364,19 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private Task<Size> GenerateSize(XElement element)
         {
-            string[] splitLink = element.GetTagValueAsString(INVENTORY_LINK, logger).Split('?');
+            string[] splitLink = element.GetTagValueAsString(XmlTagConstants.INVENTORY_LINK, logger).Split('?');
 
             return Task.FromResult(new Size
             {
-                Quantity = element.GetTagValueAsInt(INVENTORY_STOCK, logger),
+                Quantity = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_STOCK, logger),
                 LinkBase = splitLink[0],
                 LinkPostFix = splitLink.Length > 1 ? $"?{splitLink[1]}" : string.Empty,
-                Ean = element.GetTaggedValueAsLong(INVENTORY_EAN, logger),
-                ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
-                ModelProductNumber = element.GetTagValueAsString(INVENTORY_MODEL_PRODUCT_NUMBER, logger),
-                Primary = element.GetTagValueAsString(INVENTORY_SIZE_A, logger),
-                Secondary = element.GetTagValueAsString(INVENTORY_SIZE_B, logger),
+                Ean = element.GetTaggedValueAsLong(XmlTagConstants.INVENTORY_EAN, logger),
+                ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
+                ModelProductNumber =
+                    element.GetTagValueAsString(XmlTagConstants.INVENTORY_MODEL_PRODUCT_NUMBER, logger),
+                Primary = element.GetTagValueAsString(XmlTagConstants.INVENTORY_SIZE_A, logger),
+                Secondary = element.GetTagValueAsString(XmlTagConstants.INVENTORY_SIZE_B, logger),
             });
         }
 
@@ -434,9 +398,9 @@ namespace Fashionhero.Portal.BusinessLogic
             {
                 new Tag
                 {
-                    Name = INVENTORY_SPARTOO_KODE,
-                    Value = element.GetTagValueAsString(INVENTORY_SPARTOO_KODE, logger),
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    Name = XmlTagConstants.INVENTORY_SPARTOO_KODE,
+                    Value = element.GetTagValueAsString(XmlTagConstants.INVENTORY_SPARTOO_KODE, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
             };
 
@@ -449,8 +413,8 @@ namespace Fashionhero.Portal.BusinessLogic
             {
                 new Image
                 {
-                    Url = element.GetTagValueAsString(INVENTORY_IMAGE_LINK, logger),
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    Url = element.GetTagValueAsString(XmlTagConstants.INVENTORY_IMAGE_LINK, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
             };
         }
@@ -461,14 +425,15 @@ namespace Fashionhero.Portal.BusinessLogic
             XDocument document = GetDocument(inventoryPath);
 
             logger.LogWarning(
-                $"{nameof(Product)}s' '{nameof(Product.Manufacturer)}' attribute is set to the value of the '{INVENTORY_BRAND}' tag, " +
+                $"{nameof(Product)}s' '{nameof(Product.Manufacturer)}' attribute is set to the value of the '{XmlTagConstants.INVENTORY_BRAND}' tag, " +
                 $"as the Spartoo description of the expected value sounds like it being the brand.");
 
-            var xmlProducts = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).Where(x =>
-            {
-                XElement? element = x.Element(INVENTORY_LINK);
-                return element != null && !element.Value.Contains('?');
-            });
+            var xmlProducts = document.Elements(XmlTagConstants.INVENTORY_ROOT)
+                .Elements(XmlTagConstants.INVENTORY_SINGLE_PRODUCT).Where(x =>
+                {
+                    XElement? element = x.Element(XmlTagConstants.INVENTORY_LINK);
+                    return element != null && !element.Value.Contains('?');
+                });
             var generateTasks = xmlProducts.Select(x => GenerateProduct(x, localeProducts, sizes));
             return await Task.WhenAll(generateTasks);
         }
@@ -479,31 +444,31 @@ namespace Fashionhero.Portal.BusinessLogic
             {
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(INVENTORY_REGULAR_PRICE, logger),
-                    Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE, logger),
+                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_REGULAR_PRICE, logger),
+                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE, logger),
                     Currency = CurrencyCode.DKK,
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_EUR, logger),
-                    Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_EUR, logger),
+                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_EUR, logger),
+                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_EUR, logger),
                     Currency = CurrencyCode.EUR,
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_SEK, logger),
-                    Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_SEK, logger),
+                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_SEK, logger),
+                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_SEK, logger),
                     Currency = CurrencyCode.SEK,
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(INVENTORY_PRICE_PLN, logger),
-                    Discount = element.GetTaggedValueAsFloat(INVENTORY_SALE_PRICE_PLN, logger),
+                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_PLN, logger),
+                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_PLN, logger),
                     Currency = CurrencyCode.PLN,
-                    ReferenceId = element.GetTagValueAsInt(INVENTORY_ID, logger),
+                    ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
             };
 
@@ -514,7 +479,8 @@ namespace Fashionhero.Portal.BusinessLogic
         {
             XDocument document = GetDocument(inventoryXml);
 
-            var xmlSizes = document.Elements(INVENTORY_ROOT).Elements(INVENTORY_SINGLE_PRODUCT).ToList();
+            var xmlSizes = document.Elements(XmlTagConstants.INVENTORY_ROOT)
+                .Elements(XmlTagConstants.INVENTORY_SINGLE_PRODUCT).ToList();
             foreach (XElement xmlSize in xmlSizes)
                 ReportInvalidXmlFields(xmlSize);
 
@@ -652,9 +618,9 @@ namespace Fashionhero.Portal.BusinessLogic
 
         private void ReportInvalidXmlFields(XElement element)
         {
-            XElement linkElement = element.GetTaggedElement(INVENTORY_LINK);
-            XElement eanElement = element.GetTaggedElement(INVENTORY_EAN);
-            XElement referenceIdElement = element.GetTaggedElement(INVENTORY_ID);
+            XElement linkElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_LINK);
+            XElement eanElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_EAN);
+            XElement referenceIdElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_ID);
 
             bool containsQuestionMark = linkElement.Value.Contains('?');
             bool isEmptyEan = eanElement.IsEmptyValue();
