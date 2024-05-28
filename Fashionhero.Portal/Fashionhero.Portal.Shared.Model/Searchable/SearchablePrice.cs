@@ -6,10 +6,10 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
     public class SearchablePrice : ISearchablePrice
     {
         /// <inheritdoc />
-        public float NormalSell { get; set; }
+        public decimal NormalSell { get; set; }
 
         /// <inheritdoc />
-        public float? Discount { get; set; }
+        public decimal? Discount { get; set; }
 
         /// <inheritdoc />
         public CurrencyCode Currency { get; set; }

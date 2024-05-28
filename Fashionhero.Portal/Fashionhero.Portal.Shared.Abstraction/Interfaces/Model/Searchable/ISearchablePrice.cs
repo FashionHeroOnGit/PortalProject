@@ -6,8 +6,8 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
     public interface ISearchablePrice : ISearchable, ICommonSearchable
     {
         int ProductId { get; set; }
-        float NormalSell { get; set; }
-        float? Discount { get; set; }
+        decimal NormalSell { get; set; }
+        decimal? Discount { get; set; }
         CurrencyCode Currency { get; set; }
     }
 }

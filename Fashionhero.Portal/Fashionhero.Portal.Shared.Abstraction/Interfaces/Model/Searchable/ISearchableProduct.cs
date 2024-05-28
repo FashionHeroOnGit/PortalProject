@@ -2,10 +2,9 @@
 
 namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
 {
-    public interface ISearchableProduct : ISearchable, ICommonSearchable
+    public interface ISearchableProduct : ISearchable, ICommonProductSearchable
     {
         string Manufacturer { get; set; }
-        string LinkBase { get; set; }
         string Category { get; set; }
         string Brand { get; set; }
     }

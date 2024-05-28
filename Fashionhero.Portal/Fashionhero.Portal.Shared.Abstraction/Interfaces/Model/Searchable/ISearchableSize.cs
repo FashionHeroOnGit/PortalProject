@@ -2,7 +2,7 @@
 
 namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
 {
-    public interface ISearchableSize : ISearchable, ICommonSearchable
+    public interface ISearchableSize : ISearchable, ICommonProductSearchable
     {
         int ProductId { get; set; }
         int Quantity { get; set; }
@@ -10,8 +10,7 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Searchable
         string Primary { get; set; }
         string? Secondary { get; set; }
         string LinkPostFix { get; set; }
-        string LinkBase { get; set; }
-        string ModelProductNumber { get; set; }
+
 
         bool IsStocked { get; }
     }

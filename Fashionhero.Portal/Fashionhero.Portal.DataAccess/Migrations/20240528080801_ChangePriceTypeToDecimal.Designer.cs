@@ -3,6 +3,7 @@ using System;
 using Fashionhero.Portal.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fashionhero.Portal.DataAccess.Migrations
 {
     [DbContext(typeof(PortalDatabaseContext))]
-    partial class PortalDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240528080801_ChangePriceTypeToDecimal")]
+    partial class ChangePriceTypeToDecimal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -177,10 +180,6 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Manufacturer")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ModelProductNumber")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

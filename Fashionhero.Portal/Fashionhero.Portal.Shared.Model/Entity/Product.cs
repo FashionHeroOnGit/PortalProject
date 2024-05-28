@@ -46,6 +46,9 @@ namespace Fashionhero.Portal.Shared.Model.Entity
         public string LinkBase { get; set; }
 
         /// <inheritdoc />
+        public string ModelProductNumber { get; set; }
+
+        /// <inheritdoc />
         public string Category { get; set; }
 
         /// <inheritdoc />
