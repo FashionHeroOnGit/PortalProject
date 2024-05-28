@@ -53,6 +53,11 @@ namespace Fashionhero.Portal.BusinessLogic
             await productManager.AddEntities(productsToAdd.Cast<Product>().ToList());
         }
 
+        private static XDocument GetDocument(string xml)
+        {
+            return XDocument.Parse(xml, LoadOptions.PreserveWhitespace);
+        }
+
         private IProduct AddNewChildren(IProduct loadedProduct, IProduct databaseProduct)
         {
             databaseProduct.Locales = AddNewLocaleProducts(loadedProduct, databaseProduct);
@@ -351,6 +356,8 @@ namespace Fashionhero.Portal.BusinessLogic
                 Brand = element.GetTagValueAsString(XmlTagConstants.INVENTORY_BRAND, logger),
                 Category = element.GetTagValueAsString(XmlTagConstants.INVENTORY_PRODUCT_CATEGORY, logger),
                 Manufacturer = element.GetTagValueAsString(XmlTagConstants.INVENTORY_BRAND, logger),
+                ModelProductNumber =
+                    element.GetTagValueAsString(XmlTagConstants.INVENTORY_MODEL_PRODUCT_NUMBER, logger),
                 Sizes = sizes.Where(x => x.LinkBase == splitLink[0]).ToList(),
                 ExtraTags = GetExtraTags(element),
                 Images = GetImages(element),
@@ -378,11 +385,6 @@ namespace Fashionhero.Portal.BusinessLogic
                 Primary = element.GetTagValueAsString(XmlTagConstants.INVENTORY_SIZE_A, logger),
                 Secondary = element.GetTagValueAsString(XmlTagConstants.INVENTORY_SIZE_B, logger),
             });
-        }
-
-        private static XDocument GetDocument(string xml)
-        {
-            return XDocument.Parse(xml, LoadOptions.PreserveWhitespace);
         }
 
         private List<TResult> GetExceptedList<TEntity, TResult>(
@@ -444,29 +446,29 @@ namespace Fashionhero.Portal.BusinessLogic
             {
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_REGULAR_PRICE, logger),
-                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE, logger),
+                    NormalSell = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_REGULAR_PRICE, logger),
+                    Discount = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_SALE_PRICE, logger),
                     Currency = CurrencyCode.DKK,
                     ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_EUR, logger),
-                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_EUR, logger),
+                    NormalSell = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_PRICE_EUR, logger),
+                    Discount = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_SALE_PRICE_EUR, logger),
                     Currency = CurrencyCode.EUR,
                     ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_SEK, logger),
-                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_SEK, logger),
+                    NormalSell = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_PRICE_SEK, logger),
+                    Discount = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_SALE_PRICE_SEK, logger),
                     Currency = CurrencyCode.SEK,
                     ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
                 new Price
                 {
-                    NormalSell = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_PRICE_PLN, logger),
-                    Discount = element.GetTaggedValueAsFloat(XmlTagConstants.INVENTORY_SALE_PRICE_PLN, logger),
+                    NormalSell = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_PRICE_PLN, logger),
+                    Discount = element.GetTaggedValueAsDecimal(XmlTagConstants.INVENTORY_SALE_PRICE_PLN, logger),
                     Currency = CurrencyCode.PLN,
                     ReferenceId = element.GetTagValueAsInt(XmlTagConstants.INVENTORY_ID, logger),
                 },
@@ -489,15 +491,12 @@ namespace Fashionhero.Portal.BusinessLogic
         }
 
         private Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
-            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct,
-            int parentReferenceId)
+            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
         {
             ILocaleProduct loadedLocaleProduct =
-                loadedLocaleProducts.FirstOrDefault(x =>
-                    x.ItemGroupId == parentReferenceId && x.IsoName == databaseLocaleProduct.IsoName &&
-                    x.ReferenceId == databaseLocaleProduct.ReferenceId) ?? throw new ArgumentException(
-                    $"Expected to find a loaded {nameof(LocaleProduct)} with following {nameof(ILocaleProduct.ItemGroupId)} ({parentReferenceId}), " +
-                    $" {nameof(ILocaleProduct.IsoName)} ({databaseLocaleProduct.IsoName}) and {nameof(ILocaleProduct.ReferenceId)} ({databaseLocaleProduct.ReferenceId}), but none was found.");
+                loadedLocaleProducts.FirstOrDefault(x => x.IsoName == databaseLocaleProduct.IsoName) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(LocaleProduct)} with following {nameof(ILocaleProduct.IsoName)} ({databaseLocaleProduct.IsoName}), but none was found.");
 
             databaseLocaleProduct.Colour = loadedLocaleProduct.Colour;
             databaseLocaleProduct.CountryOrigin = loadedLocaleProduct.CountryOrigin;
@@ -542,8 +541,7 @@ namespace Fashionhero.Portal.BusinessLogic
                 databaseProduct.Sizes = (await Task.WhenAll(
                     databaseProduct.Sizes.Select(x => MapLoadedSizesToDatabaseSize(loadedProduct.Sizes, x)))).ToList();
                 databaseProduct.Locales = (await Task.WhenAll(databaseProduct.Locales.Select(x =>
-                    MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x,
-                        loadedProduct.ReferenceId)))).ToList();
+                    MapLoadedLocaleProductsToDatabaseLocaleProduct(loadedProduct.Locales, x)))).ToList();
                 databaseProduct.Prices =
                     (await Task.WhenAll(databaseProduct.Prices.Select(x =>
                         MapLoadedPricesToDatabasePrice(loadedProduct.Prices, x)))).ToList();

@@ -1,5 +1,4 @@
-﻿using Fashionhero.Portal.BusinessLogic.Services;
-using Fashionhero.Portal.BusinessLogic.Test.Core;
+﻿using Fashionhero.Portal.BusinessLogic.Test.Core;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
@@ -9,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-using Assert = Xunit.Assert;
 
 namespace Fashionhero.Portal.BusinessLogic.Test
 {
@@ -55,46 +53,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test
             IInvocation updateEntitiesInvocation = mockedQueryManager.Invocations.First(x => x.IsVerified);
             object updateEntitiesParameter = updateEntitiesInvocation.Arguments[0];
             updateEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
-        }
-
-        [Fact]
-        public async void ItLogsWarningWhenTagIsDiscardedDueToEmptyValue()
-        {
-            (string inventoryXml, var languageXml) =
-                GetSutArguments(nameof(ItLogsWarningWhenTagIsDiscardedDueToEmptyValue));
-            const string expectedLogMessageFragment = "value is empty";
-            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
-
-            await sut.UpdateInventory(languageXml, inventoryXml);
-
-            VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
-            logInvocation.Should().NotBeNull();
-        }
-
-        [Fact]
-        public async void ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice()
-        {
-            (string inventoryXml, var languageXml) =
-                GetSutArguments(nameof(ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice));
-            const string expectedLogMessageFragment = "needs either a normal or discount listing price to be valid";
-            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
-
-            await sut.UpdateInventory(languageXml, inventoryXml);
-
-            VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
-            logInvocation.Should().NotBeNull();
         }
 
         [Fact]
@@ -264,6 +222,26 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         }
 
         [Fact]
+        public async void ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice));
+            const string expectedLogMessageFragment = "needs either a normal or discount listing price to be valid";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
         public async void ItLogsWarningWhenSizeDoesNotHaveValidEan()
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItLogsWarningWhenSizeDoesNotHaveValidEan));
@@ -287,6 +265,26 @@ namespace Fashionhero.Portal.BusinessLogic.Test
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItLogsWarningWhenSizeHasNoneLeft));
             const string expectedLogMessageFragment = "has none left";
+            var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
+
+            await sut.UpdateInventory(languageXml, inventoryXml);
+
+            VerifyLogWarningCalled();
+            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
+            });
+            logInvocation.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async void ItLogsWarningWhenTagIsDiscardedDueToEmptyValue()
+        {
+            (string inventoryXml, var languageXml) =
+                GetSutArguments(nameof(ItLogsWarningWhenTagIsDiscardedDueToEmptyValue));
+            const string expectedLogMessageFragment = "value is empty";
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
 
             await sut.UpdateInventory(languageXml, inventoryXml);
@@ -349,11 +347,11 @@ namespace Fashionhero.Portal.BusinessLogic.Test
                     {
                         TestEntitiesBuilder.BuildPrice(449, x.ReferenceId != default ? x.ReferenceId : 1,
                             CurrencyCode.DKK),
-                        TestEntitiesBuilder.BuildPrice(60.15F, x.ReferenceId != default ? x.ReferenceId : 1,
+                        TestEntitiesBuilder.BuildPrice(60.15m, x.ReferenceId != default ? x.ReferenceId : 1,
                             CurrencyCode.EUR),
-                        TestEntitiesBuilder.BuildPrice(704.73F, x.ReferenceId != default ? x.ReferenceId : 1,
+                        TestEntitiesBuilder.BuildPrice(704.73m, x.ReferenceId != default ? x.ReferenceId : 1,
                             CurrencyCode.SEK),
-                        TestEntitiesBuilder.BuildPrice(256.63F, x.ReferenceId != default ? x.ReferenceId : 1,
+                        TestEntitiesBuilder.BuildPrice(256.63m, x.ReferenceId != default ? x.ReferenceId : 1,
                             CurrencyCode.PLN),
                     }
                     : x.Prices;

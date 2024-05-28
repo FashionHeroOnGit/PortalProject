@@ -36,7 +36,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
             };
         }
 
-        public static Price BuildPrice(float normalSell, int referenceId, CurrencyCode currency, float discount = 0)
+        public static Price BuildPrice(decimal normalSell, int referenceId, CurrencyCode currency, decimal discount = 0)
         {
             return new Price
             {

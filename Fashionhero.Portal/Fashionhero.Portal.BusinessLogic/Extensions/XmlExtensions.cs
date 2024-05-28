@@ -13,17 +13,17 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             return inner;
         }
 
-        public static float GetTaggedValueAsFloat(this XElement element, string tag, ILogger logger)
+        public static decimal GetTaggedValueAsDecimal(this XElement element, string tag, ILogger logger)
         {
             try
             {
                 XElement taggedElement = element.GetTaggedElement(tag);
 
-                string toParse = taggedElement.Value.Split(' ')[0];
-                bool success = float.TryParse(toParse.Length == 0 ? "0" : toParse, out float result);
+                string toParse = taggedElement.Value.Split(' ')[0].ConvertToEuropeanNumberStyle();
+                bool success = decimal.TryParse(toParse.Length == 0 ? "0" : toParse, out decimal result);
 
                 if (!success)
-                    throw new InvalidCastException("Failed to cast value of xml element to int");
+                    throw new InvalidCastException("Failed to cast value of xml element to decimal");
 
                 return result;
             }
@@ -35,7 +35,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             catch (InvalidCastException ice)
             {
                 logger.LogWarning(ice,
-                    $"Unable to cast tag ({tag}) of element ({element}) to float. Returning default value.");
+                    $"Unable to cast tag ({tag}) of element ({element}) to decimal. Returning default value.");
                 return default;
             }
             catch (Exception e)
@@ -59,7 +59,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
                 bool success = long.TryParse(value, out long result);
 
                 if (!success)
-                    throw new InvalidCastException("Failed to cast value of xml element to int");
+                    throw new InvalidCastException("Failed to cast value of xml element to long");
 
                 return result;
             }
@@ -71,7 +71,7 @@ namespace Fashionhero.Portal.BusinessLogic.Extensions
             catch (InvalidCastException ice)
             {
                 logger.LogWarning(ice,
-                    $"Unable to cast tag ({tag}) of element ({element}) to float. Returning default value.");
+                    $"Unable to cast tag ({tag}) of element ({element}) to long. Returning default value.");
                 return default;
             }
             catch (Exception e)
