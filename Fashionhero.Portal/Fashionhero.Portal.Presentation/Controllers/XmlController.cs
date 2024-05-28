@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +10,8 @@ namespace Fashionhero.Portal.Presentation.Controllers
     [ApiController]
     public class XmlController : ControllerBase
     {
-        private readonly IXmlLoaderService loader;
         private readonly IXmlExportService exporter;
+        private readonly IXmlLoaderService loader;
         private readonly ILogger<XmlController> logger;
 
         public XmlController(ILogger<XmlController> logger, IXmlLoaderService loader, IXmlExportService exporter)
@@ -20,6 +19,36 @@ namespace Fashionhero.Portal.Presentation.Controllers
             this.logger = logger;
             this.loader = loader;
             this.exporter = exporter;
+        }
+
+        private static string GetIsoName(string languagePath)
+        {
+            string[] split = new FileInfo(languagePath).Name.Split('_');
+            return split.Length == 1 ? Shared.Model.Constants.DANISH_ISO_NAME : split[0];
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSpartooFile()
+        {
+            const string contentType = "text/xml";
+            var fileName = $"SpartooImport-{DateOnly.FromDateTime(DateTime.Now).ToShortDateString()}.xml";
+
+            try
+            {
+                XDocument document = await exporter.GenerateXmlDocument();
+
+                if (Encoding.UTF8 is not UTF8Encoding encoding)
+                    throw new Exception("Failed to create UTF-8 Encoding object.");
+
+                byte[] bytes = encoding.GetBytes(document.ToString());
+
+                return File(bytes, contentType, fileName);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, $"Error occured during execution of {nameof(GetSpartooFile)}.");
+                throw;
+            }
         }
 
         [HttpPost]
@@ -45,36 +74,6 @@ namespace Fashionhero.Portal.Presentation.Controllers
                 logger.LogError(e, $"Error occured during execution of {nameof(UpdateInventory)}.");
                 throw;
             }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetSpartooFile()
-        {
-            const string contentType = "text/xml";
-            var fileName = $"SpartooImport-{DateOnly.FromDateTime(DateTime.Now).ToShortDateString()}.xml";
-
-            try
-            {
-                XDocument document = await exporter.GenerateXmlDocument();
-
-                if (Encoding.UTF8 is not UTF8Encoding encoding)
-                    throw new Exception($"Failed to create UTF-8 Encoding object.");
-
-                byte[] bytes = encoding.GetBytes(document.ToString());
-
-                return File(bytes, contentType, fileName);
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, $"Error occured during execution of {nameof(GetSpartooFile)}.");
-                throw;
-            }
-        }
-
-        private static string GetIsoName(string languagePath)
-        {
-            string[] split = new FileInfo(languagePath).Name.Split('_');
-            return split.Length == 1 ? Shared.Model.Constants.DANISH_ISO_NAME : split[0];
         }
 
         public class UpdateInventoryArguments
