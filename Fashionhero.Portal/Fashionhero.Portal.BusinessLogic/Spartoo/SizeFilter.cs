@@ -6,19 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class ImageFilter : ISpartooFilter
+    public class SizeFilter : ISpartooFilter
     {
         /// <inheritdoc />
         public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
         {
-            logger.LogInformation($"Filtering away Products without valid images. Current count: {oldProducts.Count}.");
+            logger.LogInformation(
+                $"Filtering away Products where one or more sizes is missing a {nameof(Size.Primary)} {nameof(Size)}. Current count: {oldProducts.Count}");
             return oldProducts.Where(x =>
             {
-                if (x.Images.Any(z => z.Url.EndsWith(".jpg")))
+                if (x.Sizes.All(z => !string.IsNullOrWhiteSpace(z.Primary)))
                     return true;
 
+                var invalidSizesReferenceIds = x.Sizes.Where(z => string.IsNullOrWhiteSpace(z.Primary))
+                    .Select(z => z.ReferenceId).ToList();
+
                 logger.LogWarning(
-                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it does not have any .jpg images.");
+                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as one or more sizes is missing its {nameof(Size.Primary)} {nameof(Size)}." +
+                    $" Missing: {string.Join(", ", invalidSizesReferenceIds)}");
                 return false;
             }).ToList();
         }
@@ -32,7 +37,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
-            return filterType == FilterType.IMAGE;
+            return filterType == FilterType.SIZE;
         }
     }
 }

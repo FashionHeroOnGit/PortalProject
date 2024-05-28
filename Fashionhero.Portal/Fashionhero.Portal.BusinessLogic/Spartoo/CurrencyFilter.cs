@@ -1,4 +1,5 @@
 ﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
+using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Fashionhero.Portal.Shared.Model.Entity;
@@ -21,6 +22,18 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
                     $"Discarding {nameof(Product)} ({x.ReferenceId}), as it does not have a {CurrencyCode.DKK} price.");
                 return false;
             }).ToList();
+        }
+
+        /// <inheritdoc />
+        public object? GetDictionaryValue(string key)
+        {
+            return default;
+        }
+
+        /// <inheritdoc />
+        public bool IsFilterOfType(FilterType filterType)
+        {
+            return filterType == FilterType.CURRENCY;
         }
     }
 }

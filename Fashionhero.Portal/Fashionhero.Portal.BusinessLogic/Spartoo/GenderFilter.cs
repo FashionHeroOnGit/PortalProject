@@ -1,5 +1,7 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
+using Fashionhero.Portal.Shared.Model;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +13,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 
         public GenderFilter()
         {
-            productGenderMap = new Dictionary<string, char>()
+            productGenderMap = new Dictionary<string, char>(StringComparer.InvariantCultureIgnoreCase)
             {
                 {"Mand", 'H'},
                 {"Unisex", 'M'},
@@ -29,12 +31,12 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
             {
                 try
                 {
-                    ILocaleProduct locale =
-                        x.Locales.FirstOrDefault(z => z.IsoName == Shared.Model.Constants.DANISH_ISO_NAME) ??
-                        throw new ArgumentException(
-                            $"Failed to find a Danish Translation of products, for filtering by {nameof(LocaleProduct.Gender)}.");
+                    ILocaleProduct locale = x.Locales.FirstOrDefault(z => z.IsoName == Constants.DANISH_ISO_NAME) ??
+                                            throw new ArgumentException(
+                                                $"Failed to find a Danish Translation of products, for filtering by {nameof(LocaleProduct.Gender)}.");
 
-                    if (productGenderMap.ContainsKey(locale.Gender))
+                    if (productGenderMap.Keys.Any(z =>
+                            string.Equals(locale.Gender, z, StringComparison.InvariantCultureIgnoreCase)))
                         return true;
 
                     logger.LogWarning($"Discarding {nameof(Product)} ({x.ReferenceId})," +
@@ -49,6 +51,18 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
                     return false;
                 }
             }).ToList();
+        }
+
+        /// <inheritdoc />
+        public object? GetDictionaryValue(string key)
+        {
+            return productGenderMap.GetValueOrDefault(key);
+        }
+
+        /// <inheritdoc />
+        public bool IsFilterOfType(FilterType filterType)
+        {
+            return filterType == FilterType.GENDER;
         }
     }
 }

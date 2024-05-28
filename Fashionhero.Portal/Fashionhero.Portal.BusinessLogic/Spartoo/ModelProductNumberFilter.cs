@@ -6,19 +6,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class ImageFilter : ISpartooFilter
+    public class ModelProductNumberFilter : ISpartooFilter
     {
         /// <inheritdoc />
         public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
         {
-            logger.LogInformation($"Filtering away Products without valid images. Current count: {oldProducts.Count}.");
+            logger.LogInformation(
+                $"Filtering away Products without a Model Product Number. Current count: {oldProducts.Count}.");
             return oldProducts.Where(x =>
             {
-                if (x.Images.Any(z => z.Url.EndsWith(".jpg")))
+                if (!string.IsNullOrWhiteSpace(x.ModelProductNumber))
                     return true;
 
                 logger.LogWarning(
-                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it does not have any .jpg images.");
+                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it is missing a Model Product Number.");
                 return false;
             }).ToList();
         }
@@ -26,13 +27,13 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         /// <inheritdoc />
         public object? GetDictionaryValue(string key)
         {
-            return default;
+            return null;
         }
 
         /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
-            return filterType == FilterType.IMAGE;
+            return filterType == FilterType.MODEL_PRODUCT_NUMBER;
         }
     }
 }
