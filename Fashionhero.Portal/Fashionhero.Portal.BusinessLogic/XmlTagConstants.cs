@@ -5,7 +5,60 @@
         #region Spartoo Export Tags
 
         public const string SPARTOO_ROOT = "root";
+
         public const string SPARTOO_PRODUCTS = "products";
+
+        public const string SPARTOO_PRODUCT = "product";
+
+        public const string SPARTOO_REFERENCE_PARTNER = "reference_partenaire";
+        public const string SPARTOO_MANUFACTURERS_NAME = "manufacturers_name";
+        public const string SPARTOO_PRODUCT_SEX = "product_sex";
+        public const string SPARTOO_PRODUCT_QUANTITY = "product_quantity";
+        public const string SPARTOO_COLOUR_ID = "color_id";
+        public const string SPARTOO_PRODUCT_STYLE = "product_style";
+        public const string SPARTOO_HEEL_HEIGHT = "heel_height";
+        public const string SPARTOO_COUNTRY_ORIGIN = "country_origin";
+        public const string SPARTOO_CODE_HS = "code_hs";
+        public const string SPARTOO_LANGUAGES = "languages";
+        public const string SPARTOO_SIZE_LIST = "size_list";
+        public const string SPARTOO_PRODUCT_COMPOSITION = "languages";
+        public const string SPARTOO_LINING_COMPOSITION = "voering_composition";
+        public const string SPARTOO_FIRST_COMPOSITION = "first_composition";
+        public const string SPARTOO_HEEL_COMPOSITION = "zool_composition";
+        public const string SPARTOO_PHOTOS = "photos";
+        public const string SPARTOO_EXTRA_INFOS = "extra_infos";
+        public const string SPARTOO_SELECTIONS = "selections";
+
+        public const string SPARTOO_LANGUAGE = "language";
+        public const string SPARTOO_SIZE = "size";
+        public const string SPARTOO_INFO = "info";
+        public const string SPARTOO_SELECTION = "selection";
+
+        public const string SPARTOO_ID = "id";
+        public const string SPARTOO_VALUE = "value";
+        public const string SPARTOO_SIZE_NAME = "size_name";
+        public const string SPARTOO_SIZE_QUANTITY = "size_quantity";
+        public const string SPARTOO_SIZE_REFERENCE = "size_reference";
+        public const string SPARTOO_EAN = "ean";
+
+        public const string SPARTOO_CODE = "code";
+        public const string SPARTOO_PRODUCT_NAME = "product_name";
+        public const string SPARTOO_PRODUCT_DESCRIPTION = "product_description";
+        public const string SPARTOO_CODE_IDU = "code_idu";
+        public const string SPARTOO_PRODUCT_COLOR = "product_color";
+        public const string SPARTOO_PRODUCT_PRICE = "product_price";
+        public const string SPARTOO_DISCOUNT = "product_price";
+
+        public const string SPARTOO_STARTDATE = "startdate";
+        public const string SPARTOO_STOPDATE = "stopdate";
+        public const string SPARTOO_PRICE_DISCOUNT = "price_discount";
+        public const string SPARTOO_RATE = "rate";
+        public const string SPARTOO_SALES = "sales";
+
+        public static string SpartooPhotoUrl(int additionalPart)
+        {
+            return $"url{additionalPart}";
+        }
 
         #endregion
 
