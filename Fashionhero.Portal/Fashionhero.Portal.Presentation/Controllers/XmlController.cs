@@ -31,7 +31,7 @@ namespace Fashionhero.Portal.Presentation.Controllers
         public async Task<IActionResult> GetSpartooFile()
         {
             const string contentType = "text/xml";
-            var fileName = $"SpartooImport-{DateOnly.FromDateTime(DateTime.Now).ToShortDateString()}.xml";
+            const string fileName = $"ExportToSpartoo.xml";
 
             try
             {
