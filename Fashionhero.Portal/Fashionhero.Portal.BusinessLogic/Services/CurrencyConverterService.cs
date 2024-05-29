@@ -11,14 +11,14 @@ namespace Fashionhero.Portal.BusinessLogic.Services
     public class CurrencyConverterService : ICurrencyConverterService
     {
         private readonly ILogger<CurrencyConverterService> logger;
-        private readonly EcbCurrencyProvider provider;
-        private Dictionary<(CurrencyCode fromCurrencyCode, CurrencyCode toCurrencyCode), decimal> rates;
+        private readonly ICurrencyRateProvider provider;
+        private readonly Dictionary<(CurrencyCode fromCurrencyCode, CurrencyCode toCurrencyCode), decimal> rates;
         private bool hasGatheredDefaultRates = false;
 
-        public CurrencyConverterService(ILogger<CurrencyConverterService> logger)
+        public CurrencyConverterService(ILogger<CurrencyConverterService> logger, ICurrencyRateProvider provider)
         {
             this.logger = logger;
-            provider = new EcbCurrencyProvider();
+            this.provider = provider;
             rates = new Dictionary<(CurrencyCode fromCurrencyCode, CurrencyCode toCurrencyCode), decimal>();
             PopulateDefaultRates();
         }
@@ -45,17 +45,17 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             };
         }
 
-        public async Task<decimal> GetRate(CurrencyCode fromCode, CurrencyCode toCode)
+        public Task<decimal> GetRate(CurrencyCode fromCode, CurrencyCode toCode)
         {
             if (rates.ContainsKey((fromCode, toCode)))
-                return rates[(fromCode, toCode)];
+                return Task.FromResult(rates[(fromCode, toCode)]);
 
-            decimal newRate = await provider.GetRateAsync(ConvertCurrencyCodeToJakubweVersion(fromCode),
+            decimal newRate = provider.GetRate(ConvertCurrencyCodeToJakubweVersion(fromCode),
                 ConvertCurrencyCodeToJakubweVersion(toCode));
             logger.LogInformation($"Caching currency rate for {fromCode} to {toCode}. Rate: {newRate}");
             rates.Add((fromCode, toCode), newRate);
 
-            return newRate;
+            return Task.FromResult(newRate);
         }
 
         private static Currency ConvertCurrencyCodeToJakubweVersion(CurrencyCode code)

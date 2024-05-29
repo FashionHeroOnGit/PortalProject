@@ -2,6 +2,8 @@
 using Fashionhero.Portal.BusinessLogic.Services;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Startup;
+using Jakubqwe.CurrencyConverter;
+using Jakubqwe.CurrencyConverter.CurrencyRateProviders;
 
 namespace Fashionhero.Portal.Presentation
 {
@@ -13,6 +15,7 @@ namespace Fashionhero.Portal.Presentation
             services.AddScoped<IXmlLoaderService, LoaderService>();
             services.AddScoped<IXmlExportService, SpartooService>();
             services.AddScoped<ICurrencyConverterService, CurrencyConverterService>();
+            services.AddScoped<ICurrencyRateProvider, EcbCurrencyProvider>();
         }
 
         /// <inheritdoc />
