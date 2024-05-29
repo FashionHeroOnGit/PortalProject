@@ -8,13 +8,12 @@ using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
 using Microsoft.Extensions.Logging;
 
-namespace Fashionhero.Portal.BusinessLogic
+namespace Fashionhero.Portal.BusinessLogic.Services
 {
     public class LoaderService : IXmlLoaderService
     {
         private readonly ILogger<LoaderService> logger;
         private readonly IEntityQueryManager<Product, SearchableProduct> productManager;
-
 
         public LoaderService(
             ILogger<LoaderService> logger, IEntityQueryManager<Product, SearchableProduct> productManager)
