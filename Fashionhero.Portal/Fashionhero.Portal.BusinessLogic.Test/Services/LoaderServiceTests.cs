@@ -1,4 +1,5 @@
-﻿using Fashionhero.Portal.BusinessLogic.Test.Core;
+﻿using Fashionhero.Portal.BusinessLogic.Services;
+using Fashionhero.Portal.BusinessLogic.Test.Core;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Fashionhero.Portal.BusinessLogic.Test
+namespace Fashionhero.Portal.BusinessLogic.Test.Services
 {
     public class LoaderServiceTests
     {
@@ -27,13 +28,13 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private static string BuildInventoryTestFilePath(string testName)
         {
-            return $@"Xml\{nameof(LoaderServiceTests)}\{testName}\Inventory.xml";
+            return $@".\Xml\{nameof(LoaderServiceTests)}\{testName}\Inventory.xml";
         }
 
         private static string BuildLanguageTestFilePath(string testName, int fileNumber = 0)
         {
             return
-                $@"Xml\{nameof(LoaderServiceTests)}\{testName}\Language{(fileNumber != default ? fileNumber.ToString() : "")}.xml";
+                $@".\Xml\{nameof(LoaderServiceTests)}\{testName}\Language{(fileNumber != default ? fileNumber.ToString() : "")}.xml";
         }
 
         [Fact]
@@ -316,50 +317,9 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> BareBoneData()
         {
-            return BuildProducts([new Product(),]);
+            return TestEntitiesBuilder.BuildProducts([new Product(),]);
         }
 
-        private ICollection<Product> BuildProducts(ICollection<Product> products)
-        {
-            return products.Select(x =>
-            {
-                var images = x.Images.Count == 0
-                    ? new List<IImage>
-                    {
-                        TestEntitiesBuilder.BuildImage(x.ReferenceId != default ? x.ReferenceId : 1),
-                    }
-                    : x.Images;
-                var localeProducts = x.Locales.Count == 0
-                    ? new List<ILocaleProduct>
-                    {
-                        TestEntitiesBuilder.BuildLocaleProduct(x.ReferenceId != default ? x.ReferenceId : 1, 1, "en",
-                            "Horse X - T", "EN", "BLACK"),
-                    }
-                    : x.Locales;
-                var sizes = x.Sizes.Count == 0
-                    ? new List<ISize>
-                    {
-                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                    }
-                    : x.Sizes;
-                var prices = x.Prices.Count == 0
-                    ? new List<IPrice>
-                    {
-                        TestEntitiesBuilder.BuildPrice(449, x.ReferenceId != default ? x.ReferenceId : 1,
-                            CurrencyCode.DKK),
-                        TestEntitiesBuilder.BuildPrice(60.15m, x.ReferenceId != default ? x.ReferenceId : 1,
-                            CurrencyCode.EUR),
-                        TestEntitiesBuilder.BuildPrice(704.73m, x.ReferenceId != default ? x.ReferenceId : 1,
-                            CurrencyCode.SEK),
-                        TestEntitiesBuilder.BuildPrice(256.63m, x.ReferenceId != default ? x.ReferenceId : 1,
-                            CurrencyCode.PLN),
-                    }
-                    : x.Prices;
-                var tags = x.ExtraTags;
-                return TestEntitiesBuilder.BuildProduct(x.ReferenceId != default ? x.ReferenceId : 1, images,
-                    localeProducts, sizes, prices, tags, !string.IsNullOrWhiteSpace(x.Brand) ? x.Brand : "Horse");
-            }).ToList();
-        }
 
         private (string, Dictionary<string, string>) GetSutArguments(string testName)
         {
@@ -379,7 +339,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product
                 {
                     Locales = new List<ILocaleProduct>
@@ -392,7 +352,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product
                 {
                     Locales = new List<ILocaleProduct>
@@ -406,7 +366,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product
                 {
                     Sizes = new List<ISize>
@@ -419,7 +379,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItAddsNewSizeDuringUpdateExpectedData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product
                 {
                     Sizes = new List<ISize>
@@ -433,7 +393,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product {ReferenceId = 1,},
                 new Product {ReferenceId = 2,},
                 new Product {ReferenceId = 3,},
@@ -443,7 +403,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test
 
         private ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
         {
-            return BuildProducts([
+            return TestEntitiesBuilder.BuildProducts([
                 new Product {ReferenceId = 3,},
                 new Product {ReferenceId = 4,},
             ]);
