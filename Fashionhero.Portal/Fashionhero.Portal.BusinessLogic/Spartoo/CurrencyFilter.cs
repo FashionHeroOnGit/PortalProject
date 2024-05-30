@@ -25,7 +25,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
                     return true;
 
                 logger.LogWarning(
-                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it does not have a {CurrencyCode.DKK} price.");
+                    $"Discarding {nameof(Product)} ({x.ReferenceId}), as it does not have a {CurrencyCode.DKK} {nameof(Price)}.");
                 return false;
             }).ToList();
         }
