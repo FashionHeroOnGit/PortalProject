@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Jakubqwe.CurrencyConverter" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
