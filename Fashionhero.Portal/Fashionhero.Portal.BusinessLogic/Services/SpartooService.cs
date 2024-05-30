@@ -1,11 +1,10 @@
 ﻿using System.Xml.Linq;
 using Fashionhero.Portal.BusinessLogic.Spartoo;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
-using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Fashionhero.Portal.Shared.Model;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
@@ -16,10 +15,11 @@ namespace Fashionhero.Portal.BusinessLogic.Services
     public class SpartooService : IXmlExportService
     {
         private readonly ICurrencyConverterService converterService;
-
-        private readonly List<ISpartooFilter> filters;
         private readonly ILogger<SpartooService> logger;
         private readonly IEntityQueryManager<Product, SearchableProduct> productManager;
+
+        private List<IFilter> filters;
+        private List<IMapper> mappers;
 
         public SpartooService(
             ILogger<SpartooService> logger, IEntityQueryManager<Product, SearchableProduct> productManager,
@@ -28,16 +28,8 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             this.logger = logger;
             this.productManager = productManager;
             this.converterService = converterService;
-            filters = new List<ISpartooFilter>
-            {
-                new ProductTypeFilter(),
-                new ImageFilter(),
-                new ModelProductNumberFilter(),
-                new CurrencyFilter(),
-                new SizeFilter(),
-                new GenderFilter(),
-                new ColourFilter(),
-            };
+
+            InitializeDataProcessors();
         }
 
         /// <inheritdoc />
@@ -105,12 +97,12 @@ namespace Fashionhero.Portal.BusinessLogic.Services
         {
             ILocaleProduct locale = product.Locales.First(x =>
                 string.Equals(x.IsoName, Constants.DANISH_ISO_NAME, StringComparison.InvariantCultureIgnoreCase));
-            object? productSex = filters.First(x => x.IsFilterOfType(FilterType.GENDER))
+            object productSex = mappers.First(x => x.IsMapperOfType(MapType.SPARTOO_GENDER))
                 .GetDictionaryValue(locale.Gender);
-            object? colourId = filters.First(x => x.IsFilterOfType(FilterType.COLOUR))
+            object colourId = mappers.First(x => x.IsMapperOfType(MapType.SPARTOO_COLOUR))
                 .GetDictionaryValue(locale.Colour);
-            object? productStyle =
-                filters.First(x => x.IsFilterOfType(FilterType.TYPE)).GetDictionaryValue(locale.Type);
+            object productStyle = mappers.First(x => x.IsMapperOfType(MapType.SPARTOO_TYPE))
+                .GetDictionaryValue(locale.Type);
 
             var languageGenerationTask = product.Locales.Select(BuildXmlLanguage);
             var sizeGenerationTask = product.Sizes.Select(BuildXmlSize);
@@ -147,6 +139,28 @@ namespace Fashionhero.Portal.BusinessLogic.Services
 
             logger.LogInformation($"Count After filtering away invalid Products: {filteredProducts.Count}");
             return Task.FromResult(filteredProducts);
+        }
+
+        private void InitializeDataProcessors()
+        {
+            var genderMappedFilter = new GenderMappedFilter();
+            var productTypeMappedFilter = new ProductTypeMappedFilter();
+
+            filters =
+            [
+                genderMappedFilter,
+                productTypeMappedFilter,
+                new ImageFilter(),
+                new ModelProductNumberFilter(),
+                new CurrencyFilter(),
+                new SizeFilter(),
+            ];
+            mappers =
+            [
+                new ColourMapper(),
+                genderMappedFilter,
+                productTypeMappedFilter,
+            ];
         }
     }
 }

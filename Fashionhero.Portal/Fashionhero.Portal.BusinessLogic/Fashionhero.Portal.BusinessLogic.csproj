@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Spartoo\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Jakubqwe.CurrencyConverter" Version="1.2.0" />
   </ItemGroup>
 

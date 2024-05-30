@@ -2,7 +2,6 @@
 using Fashionhero.Portal.BusinessLogic.Spartoo;
 using Fashionhero.Portal.BusinessLogic.Test.Core;
 using Fashionhero.Portal.Shared.Abstraction.Enums;
-using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Entity;
 using FluentAssertions;
@@ -27,7 +26,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             const bool expected = false;
             var sut = new CurrencyFilter();
 
-            bool actual = sut.IsFilterOfType(FilterType.COLOUR);
+            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_TYPE);
 
             actual.Should().Be(expected);
         }
@@ -38,19 +37,9 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             const bool expected = true;
             var sut = new CurrencyFilter();
 
-            bool actual = sut.IsFilterOfType(FilterType.CURRENCY);
+            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_CURRENCY);
 
             actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void ItReturnsNullWhenAttemptingToGetValueFromDictionary()
-        {
-            var sut = new CurrencyFilter();
-
-            object? actual = sut.GetDictionaryValue("any value");
-
-            actual.Should().BeNull();
         }
 
         [Fact]

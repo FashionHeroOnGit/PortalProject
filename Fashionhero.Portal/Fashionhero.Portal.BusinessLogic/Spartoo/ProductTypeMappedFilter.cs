@@ -1,17 +1,17 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Fashionhero.Portal.Shared.Model;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class ProductTypeFilter : ISpartooFilter
+    public class ProductTypeMappedFilter : IFilter, IMapper
     {
         private readonly Dictionary<string, int> productStyleMap;
 
-        public ProductTypeFilter()
+        public ProductTypeMappedFilter()
         {
             productStyleMap = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase)
             {
@@ -224,15 +224,24 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public object? GetDictionaryValue(string key)
+        public object GetDictionaryValue(object key)
         {
-            return productStyleMap.GetValueOrDefault(key);
+            if (key.GetType() != typeof(string))
+                throw new ArgumentException($"Expected key to be of type string");
+
+            return productStyleMap.GetValueOrDefault((string) key);
         }
 
         /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
-            return filterType == FilterType.TYPE;
+            return filterType == FilterType.SPARTOO_TYPE;
+        }
+
+        /// <inheritdoc />
+        public bool IsMapperOfType(MapType mapType)
+        {
+            return mapType == MapType.SPARTOO_TYPE;
         }
     }
 }

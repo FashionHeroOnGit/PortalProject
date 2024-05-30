@@ -1,17 +1,17 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Fashionhero.Portal.Shared.Model;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class GenderFilter : ISpartooFilter
+    public class GenderMappedFilter : IFilter, IMapper
     {
         private readonly Dictionary<string, char> productGenderMap;
 
-        public GenderFilter()
+        public GenderMappedFilter()
         {
             productGenderMap = new Dictionary<string, char>(StringComparer.InvariantCultureIgnoreCase)
             {
@@ -54,15 +54,24 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public object? GetDictionaryValue(string key)
+        public object GetDictionaryValue(object key)
         {
-            return productGenderMap.GetValueOrDefault(key);
+            if (key.GetType() != typeof(string))
+                throw new ArgumentException($"Expected key to be of type string");
+
+            return productGenderMap.GetValueOrDefault((string) key);
         }
 
         /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
-            return filterType == FilterType.GENDER;
+            return filterType == FilterType.SPARTOO_GENDER;
+        }
+
+        /// <inheritdoc />
+        public bool IsMapperOfType(MapType mapType)
+        {
+            return mapType == MapType.SPARTOO_GENDER;
         }
     }
 }

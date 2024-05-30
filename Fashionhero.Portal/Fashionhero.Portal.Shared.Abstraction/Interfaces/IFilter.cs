@@ -1,14 +1,13 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Microsoft.Extensions.Logging;
 
-namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo
+namespace Fashionhero.Portal.Shared.Abstraction.Interfaces
 {
-    public interface ISpartooFilter
+    public interface IFilter
     {
         ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger);
 
-        object? GetDictionaryValue(string key);
         bool IsFilterOfType(FilterType filterType);
     }
 }

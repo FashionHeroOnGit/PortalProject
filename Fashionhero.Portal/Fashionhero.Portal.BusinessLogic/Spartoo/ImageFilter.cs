@@ -1,12 +1,12 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class ImageFilter : ISpartooFilter
+    public class ImageFilter : IFilter
     {
         /// <inheritdoc />
         public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
@@ -24,15 +24,9 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public object? GetDictionaryValue(string key)
-        {
-            return default;
-        }
-
-        /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
-            return filterType == FilterType.IMAGE;
+            return filterType == FilterType.SPARTOO_IMAGE;
         }
     }
 }

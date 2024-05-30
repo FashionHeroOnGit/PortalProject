@@ -1,15 +1,15 @@
-﻿using Fashionhero.Portal.Shared.Abstraction.Enums.Spartoo;
+﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
+using Fashionhero.Portal.Shared.Abstraction.Interfaces;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Spartoo;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
-    public class ColourFilter : ISpartooFilter
+    public class ColourMapper : IMapper
     {
         private readonly Dictionary<string, int> colourIdMap;
 
-        public ColourFilter()
+        public ColourMapper()
         {
             colourIdMap = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase)
             {
@@ -43,22 +43,19 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public object GetDictionaryValue(object key)
         {
-            return oldProducts;
-        }
+            if (key.GetType() != typeof(string))
+                throw new ArgumentException($"Expected key to be of type string");
 
-        /// <inheritdoc />
-        public object? GetDictionaryValue(string key)
-        {
-            bool success = colourIdMap.TryGetValue(key, out int result);
+            bool success = colourIdMap.TryGetValue((string) key, out int result);
             return success ? result : 534;
         }
 
         /// <inheritdoc />
-        public bool IsFilterOfType(FilterType filterType)
+        public bool IsMapperOfType(MapType mapType)
         {
-            return filterType == FilterType.COLOUR;
+            return mapType == MapType.SPARTOO_COLOUR;
         }
     }
 }
