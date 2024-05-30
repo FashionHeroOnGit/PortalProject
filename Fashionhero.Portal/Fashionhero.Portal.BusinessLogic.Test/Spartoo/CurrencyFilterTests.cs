@@ -44,9 +44,21 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         }
 
         [Fact]
+        public void ItDoesNotRemovesProductsWhenApplyingTheFilter()
+        {
+            var expected = GenerateValidProducts();
+            var original = GenerateValidProducts();
+            var sut = new CurrencyFilter(mockedLogger.Object);
+
+            var actual = sut.FilterProducts(original);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
         public void ItRemovesInvalidProductsWhenApplyingTheFilter()
         {
-            var expected = GenerateEmptyProductsList();
+            var expected = GenerateEmptyProducts();
             var original = GenerateInvalidProducts();
             var sut = new CurrencyFilter(mockedLogger.Object);
 
@@ -69,7 +81,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             logInvocation.Should().NotBeNull();
         }
 
-        private ICollection<IProduct> GenerateEmptyProductsList()
+        private ICollection<IProduct> GenerateEmptyProducts()
         {
             return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
         }
@@ -79,6 +91,14 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             return TestEntitiesBuilder.BuildProducts([
                 new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.USD,},},},
                 new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.USD,},},},
+            ]).Cast<IProduct>().ToList();
+        }
+
+        private ICollection<IProduct> GenerateValidProducts()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.DKK,},},},
+                new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.DKK,},},},
             ]).Cast<IProduct>().ToList();
         }
     }

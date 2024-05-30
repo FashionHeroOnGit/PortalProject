@@ -48,9 +48,8 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             var expected = 1;
             var sut = new ColourMapper();
 
-            object? actual = sut.GetDictionaryValue("hvid");
+            object actual = sut.GetDictionaryValue("hvid");
 
-            actual.Should().NotBeNull();
             actual.Should().BeOfType<int>();
             actual.Should().Be(expected);
         }
@@ -61,9 +60,8 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             var expected = 534;
             var sut = new ColourMapper();
 
-            object? actual = sut.GetDictionaryValue("some random text that is not a key in the dictionary");
+            object actual = sut.GetDictionaryValue("some random text that is not a key in the dictionary");
 
-            actual.Should().NotBeNull();
             actual.Should().BeOfType<int>();
             actual.Should().Be(expected);
         }
