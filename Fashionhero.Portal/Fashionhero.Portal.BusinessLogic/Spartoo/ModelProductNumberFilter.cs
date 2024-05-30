@@ -8,8 +8,15 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class ModelProductNumberFilter : IFilter
     {
+        private readonly ILogger<ModelProductNumberFilter> logger;
+
+        public ModelProductNumberFilter(ILogger<ModelProductNumberFilter> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation(
                 $"Filtering away Products without a Model Product Number. Current count: {oldProducts.Count}.");

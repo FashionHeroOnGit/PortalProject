@@ -8,8 +8,15 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class CurrencyFilter : IFilter
     {
+        private readonly ILogger<CurrencyFilter> logger;
+
+        public CurrencyFilter(ILogger<CurrencyFilter> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation($"Filtering away Products without a DKK price. Current count: {oldProducts.Count}");
             return oldProducts.Where(x =>

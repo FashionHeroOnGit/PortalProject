@@ -8,8 +8,15 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class SizeFilter : IFilter
     {
+        private readonly ILogger<SizeFilter> logger;
+
+        public SizeFilter(ILogger<SizeFilter> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation(
                 $"Filtering away Products where one or more sizes is missing a {nameof(Size.Primary)} {nameof(Size)}. Current count: {oldProducts.Count}");

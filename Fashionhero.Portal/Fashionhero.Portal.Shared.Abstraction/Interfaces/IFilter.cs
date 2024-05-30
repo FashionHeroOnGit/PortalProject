@@ -6,7 +6,7 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces
 {
     public interface IFilter
     {
-        ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger);
+        ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts);
 
         bool IsFilterOfType(FilterType filterType);
     }

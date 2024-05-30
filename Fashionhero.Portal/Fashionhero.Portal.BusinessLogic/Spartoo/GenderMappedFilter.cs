@@ -9,10 +9,12 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class GenderMappedFilter : IFilter, IMapper
     {
+        private readonly ILogger<GenderMappedFilter> logger;
         private readonly Dictionary<string, char> productGenderMap;
 
-        public GenderMappedFilter()
+        public GenderMappedFilter(ILogger<GenderMappedFilter> logger)
         {
+            this.logger = logger;
             productGenderMap = new Dictionary<string, char>(StringComparer.InvariantCultureIgnoreCase)
             {
                 {"Mand", 'H'},
@@ -23,7 +25,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation(
                 $"Filtering away Products without a Danish translation containing a valid gender that can be translatable to a Product Sex/Gender. Current count: {oldProducts.Count}");

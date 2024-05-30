@@ -8,6 +8,7 @@ using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Fashionhero.Portal.Shared.Model;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Fashionhero.Portal.Shared.Model.Searchable;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Services
@@ -23,13 +24,13 @@ namespace Fashionhero.Portal.BusinessLogic.Services
 
         public SpartooService(
             ILogger<SpartooService> logger, IEntityQueryManager<Product, SearchableProduct> productManager,
-            ICurrencyConverterService converterService)
+            ICurrencyConverterService converterService, ILoggerFactory loggerFactory)
         {
             this.logger = logger;
             this.productManager = productManager;
             this.converterService = converterService;
 
-            InitializeDataProcessors();
+            InitializeDataProcessors(loggerFactory);
         }
 
         /// <inheritdoc />
@@ -134,26 +135,26 @@ namespace Fashionhero.Portal.BusinessLogic.Services
         private Task<ICollection<Product>> DiscardInvalidProducts(ICollection<Product> databaseProducts)
         {
             var filteredProducts = filters.Aggregate(databaseProducts,
-                (current, filter) => filter.FilterProducts(current.Cast<IProduct>().ToList(), logger).Cast<Product>()
-                    .ToList());
+                (current, filter) => filter.FilterProducts(current.Cast<IProduct>().ToList()).Cast<Product>().ToList());
 
             logger.LogInformation($"Count After filtering away invalid Products: {filteredProducts.Count}");
             return Task.FromResult(filteredProducts);
         }
 
-        private void InitializeDataProcessors()
+        private void InitializeDataProcessors(ILoggerFactory loggerFactory)
         {
-            var genderMappedFilter = new GenderMappedFilter();
-            var productTypeMappedFilter = new ProductTypeMappedFilter();
+            var genderMappedFilter = new GenderMappedFilter(loggerFactory.CreateLogger<GenderMappedFilter>());
+            var productTypeMappedFilter =
+                new ProductTypeMappedFilter(loggerFactory.CreateLogger<ProductTypeMappedFilter>());
 
             filters =
             [
                 genderMappedFilter,
                 productTypeMappedFilter,
-                new ImageFilter(),
-                new ModelProductNumberFilter(),
-                new CurrencyFilter(),
-                new SizeFilter(),
+                new ImageFilter(loggerFactory.CreateLogger<ImageFilter>()),
+                new ModelProductNumberFilter(loggerFactory.CreateLogger<ModelProductNumberFilter>()),
+                new CurrencyFilter(loggerFactory.CreateLogger<CurrencyFilter>()),
+                new SizeFilter(loggerFactory.CreateLogger<SizeFilter>()),
             ];
             mappers =
             [

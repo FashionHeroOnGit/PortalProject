@@ -13,18 +13,18 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
 {
     public class CurrencyFilterTests
     {
-        private readonly Mock<ILogger<SpartooService>> mockedLogger;
+        private readonly Mock<ILogger<CurrencyFilter>> mockedLogger;
 
         public CurrencyFilterTests()
         {
-            mockedLogger = new Mock<ILogger<SpartooService>>();
+            mockedLogger = new Mock<ILogger<CurrencyFilter>>();
         }
 
         [Fact]
         public void ItSaysFalseWhenAskedIfFilterIsAnythingOtherThanCurrencyFilter()
         {
             const bool expected = false;
-            var sut = new CurrencyFilter();
+            var sut = new CurrencyFilter(mockedLogger.Object);
 
             bool actual = sut.IsFilterOfType(FilterType.SPARTOO_TYPE);
 
@@ -35,7 +35,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         public void ItSaysTrueWhenAskedIfFilterIsCurrencyFilter()
         {
             const bool expected = true;
-            var sut = new CurrencyFilter();
+            var sut = new CurrencyFilter(mockedLogger.Object);
 
             bool actual = sut.IsFilterOfType(FilterType.SPARTOO_CURRENCY);
 
@@ -47,9 +47,9 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             var expected = ItMakesNoChangesWhenApplyingTheFilterToProductsExpectedData();
             var original = ItMakesNoChangesWhenApplyingTheFilterToProductsOriginalData();
-            var sut = new CurrencyFilter();
+            var sut = new CurrencyFilter(mockedLogger.Object);
 
-            var actual = sut.FilterProducts(original, mockedLogger.Object);
+            var actual = sut.FilterProducts(original);
 
             actual.Should().BeEquivalentTo(expected);
         }

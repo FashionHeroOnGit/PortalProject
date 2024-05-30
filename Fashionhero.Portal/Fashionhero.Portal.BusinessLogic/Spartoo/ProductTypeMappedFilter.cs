@@ -9,10 +9,12 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class ProductTypeMappedFilter : IFilter, IMapper
     {
+        private readonly ILogger<ProductTypeMappedFilter> logger;
         private readonly Dictionary<string, int> productStyleMap;
 
-        public ProductTypeMappedFilter()
+        public ProductTypeMappedFilter(ILogger<ProductTypeMappedFilter> logger)
         {
+            this.logger = logger;
             productStyleMap = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase)
             {
                 {"bjoernborg-underbukser", 11475},
@@ -194,7 +196,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation(
                 $"Filtering away Products without a Danish translation containing a valid {nameof(LocaleProduct.Type)} that can be translatable to a Product Style. Current count: {oldProducts.Count}");

@@ -8,8 +8,15 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
     public class ImageFilter : IFilter
     {
+        private readonly ILogger<ImageFilter> logger;
+
+        public ImageFilter(ILogger<ImageFilter> logger)
+        {
+            this.logger = logger;
+        }
+
         /// <inheritdoc />
-        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts, ILogger logger)
+        public ICollection<IProduct> FilterProducts(ICollection<IProduct> oldProducts)
         {
             logger.LogInformation($"Filtering away Products without valid images. Current count: {oldProducts.Count}.");
             return oldProducts.Where(x =>
