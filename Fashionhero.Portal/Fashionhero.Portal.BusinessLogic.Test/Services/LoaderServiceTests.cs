@@ -102,12 +102,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -129,12 +124,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -151,12 +141,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -173,12 +158,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -195,12 +175,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -214,12 +189,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -234,12 +204,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -253,12 +218,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -272,12 +232,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -292,12 +247,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             await sut.UpdateInventory(languageXml, inventoryXml);
 
             mockedLogger.VerifyLogWarningCalled();
-            IInvocation? logInvocation = mockedLogger.Invocations.FirstOrDefault(x =>
-            {
-                var message = x.Arguments[2].ToString();
-                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
-                    .Contains(expectedLogMessageFragment.ToLowerInvariant());
-            });
+            IInvocation? logInvocation = mockedLogger.TryGetInvocation(expectedLogMessageFragment);
             logInvocation.Should().NotBeNull();
         }
 
@@ -320,7 +270,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
         {
             return TestEntitiesBuilder.BuildProducts([new Product(),]);
         }
-
 
         private (string, Dictionary<string, string>) GetSutArguments(string testName)
         {

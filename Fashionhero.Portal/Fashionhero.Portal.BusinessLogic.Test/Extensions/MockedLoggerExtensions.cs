@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using NUnit.Framework.Internal.Execution;
 
 namespace Fashionhero.Portal.BusinessLogic.Test.Extensions
 {
@@ -15,6 +16,19 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Extensions
                 x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Warning), It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((obj, type) => true), It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception?, string>>((obj, type) => true)), Times.AtLeastOnce());
+        }
+
+        public static IInvocation? TryGetInvocation<T>(this Mock<ILogger<T>> mockedLogger, string logFragment)
+        {
+            return mockedLogger.Invocations.FirstOrDefault(x =>
+            {
+                if (x.Arguments.Count < 3)
+                    return false;
+
+                var message = x.Arguments[2].ToString();
+                return !string.IsNullOrWhiteSpace(message) && message.ToLowerInvariant()
+                    .Contains(logFragment.ToLowerInvariant());
+            });
         }
     }
 }
