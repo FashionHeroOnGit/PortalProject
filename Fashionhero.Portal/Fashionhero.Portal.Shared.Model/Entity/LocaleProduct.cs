@@ -6,10 +6,9 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public LocaleProduct(int id, Product product)
+        public LocaleProduct(int id = 0)
         {
             this.id = id;
-            Product = product;
         }
 
         /// <inheritdoc />
@@ -44,6 +43,9 @@ namespace Fashionhero.Portal.Shared.Model.Entity
 
         /// <inheritdoc />
         public string Colour { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
 
         /// <inheritdoc />
         public int Id

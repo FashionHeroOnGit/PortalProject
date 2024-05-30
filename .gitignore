@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+/Fashionhero.Portal/Fashionhero.Portal.Presentation/*.db*

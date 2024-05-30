@@ -14,5 +14,6 @@ namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Dto
         string Material { get; set; }
         string? Gender { get; set; }
         string Colour { get; set; }
+        int ReferenceId { get; set; }
     }
 }

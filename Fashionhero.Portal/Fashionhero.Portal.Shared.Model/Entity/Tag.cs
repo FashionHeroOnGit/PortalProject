@@ -6,9 +6,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public Tag(int id, Product product)
+        public Tag(int id = 0)
         {
-            Product = product;
             this.id = id;
         }
 
