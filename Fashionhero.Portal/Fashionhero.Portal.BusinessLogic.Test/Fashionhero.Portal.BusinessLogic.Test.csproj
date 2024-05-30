@@ -18,10 +18,121 @@
     <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="xunit" Version="2.8.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fashionhero.Portal.BusinessLogic\Fashionhero.Portal.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Fashionhero.Portal.Shared.Model\Fashionhero.Portal.Shared.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.4\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Language2.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewLocaleProductDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItDeletesProductsThatNoLongerExist\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItDeletesProductsThatNoLongerExist\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenElementLooksLikeSizeButIsMissingEan\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language3.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language2.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenManySizesAreAttachedDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleProductsWithSameBaseLinkIsGenerated\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenMultipleSizesWithSameEanIsGenerated\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenNoSizesGetsAttached\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenNoSizesGetsAttached\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenPriceIsDiscardedDueToInvalidListingPrice\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeDoesNotHaveValidEan\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeDoesNotHaveValidEan\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeHasNoneLeft\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenSizeHasNoneLeft\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenTagIsDiscardedDueToEmptyValue\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItLogsWarningWhenTagIsDiscardedDueToEmptyValue\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItSavesGeneratedProducts\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItSavesGeneratedProducts\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewSizeDuringUpdate\Inventory.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xml\LoaderServiceTests\ItAddsNewSizeDuringUpdate\Language.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

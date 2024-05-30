@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Fashionhero.Portal.Shared.Abstraction\Fashionhero.Portal.Shared.Abstraction.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Storage\" />
+  </ItemGroup>
+
 </Project>

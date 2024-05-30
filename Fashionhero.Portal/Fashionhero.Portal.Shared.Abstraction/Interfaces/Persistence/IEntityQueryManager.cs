@@ -1,22 +1,21 @@
 ﻿namespace Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence
 {
-    public interface IEntityQueryManager<TEntity, TSearchable, TDto> where TEntity : class, IEntity
+    public interface IEntityQueryManager<TEntity, TSearchable> where TEntity : class, IEntity
         where TSearchable : class, ISearchable
-        where TDto : class, IDto
     {
         /// <summary>
         /// Add one <typeparamref name="TEntity"/> to the database.
         /// </summary>
-        /// <param name="dto">The data for a(n) <typeparamref name="TEntity"/> to be added.</param>
+        /// <param name="entity">A(n) <typeparamref name="TEntity"/> to be added.</param>
         /// <returns>The newly added <typeparamref name="TEntity"/>.</returns>
-        Task<TEntity> AddEntity(TDto dto);
+        Task<TEntity> AddEntity(TEntity entity);
 
         /// <summary>
         /// Add multiple <typeparamref name="TEntity"/> to the database.
         /// </summary>
-        /// <param name="dtos">The data for a(n) <typeparamref name="TEntity"/> to be added.</param>
+        /// <param name="entities">A(n) <typeparamref name="TEntity"/> to be added.</param>
         /// <returns>All the newly added <typeparamref name="TEntity"/>.</returns>
-        Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TDto> dtos);
+        Task<IEnumerable<TEntity>> AddEntities(IEnumerable<TEntity> entities);
 
         /// <summary>
         /// Get the first <typeparamref name="TEntity"/> matching properties defined in supplied <typeparamref name="TSearchable"></typeparamref>.
@@ -52,6 +51,13 @@
         /// <param name="searchable">The <typeparamref name="TSearchable"></typeparamref> with query arguments set to find what to delete</param>
         /// <returns>Nothing.</returns>
         Task DeleteEntity(TSearchable searchable);
+
+        /// <summary>
+        /// Deletes all the supplied entities from the database.
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        Task DeleteEntities(IEnumerable<TEntity> entities);
 
         /// <summary>
         /// Delete the <typeparamref name="TEntity"/> with supplied <paramref name="id"/>.

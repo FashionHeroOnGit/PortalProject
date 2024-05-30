@@ -6,25 +6,25 @@ namespace Fashionhero.Portal.Shared.Model.Entity
     {
         private readonly int id;
 
-        public Product(int id)
+        public Product(int id = 0)
         {
             this.id = id;
         }
 
         /// <inheritdoc />
-        public ICollection<IImage> Images { get; set; }
+        public ICollection<IImage> Images { get; set; } = new List<IImage>();
 
         /// <inheritdoc />
-        public ICollection<ILocaleProduct> Locales { get; set; }
+        public ICollection<ILocaleProduct> Locales { get; set; } = new List<ILocaleProduct>();
 
         /// <inheritdoc />
-        public ICollection<ISize> Sizes { get; set; }
+        public ICollection<ISize> Sizes { get; set; } = new List<ISize>();
 
         /// <inheritdoc />
-        public ICollection<IPrice> Prices { get; set; }
+        public ICollection<IPrice> Prices { get; set; } = new List<IPrice>();
 
         /// <inheritdoc />
-        public ICollection<ITag> ExtraTags { get; set; }
+        public ICollection<ITag> ExtraTags { get; set; } = new List<ITag>();
 
         /// <inheritdoc />
         public int Id

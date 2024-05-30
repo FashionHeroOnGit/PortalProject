@@ -12,15 +12,15 @@ namespace Fashionhero.Portal.DataAccess.Config
             base.Configure(builder);
 
             builder.HasMany(x => (ICollection<Image>) x.Images).WithOne(x => (Product) x.Product)
-                .HasForeignKey(x => x.ProductId);
+                .HasForeignKey(x => x.ProductId).IsRequired();
             builder.HasMany(x => (ICollection<LocaleProduct>) x.Locales).WithOne(x => (Product) x.Product)
-                .HasForeignKey(x => x.ProductId);
+                .HasForeignKey(x => x.ProductId).IsRequired();
             builder.HasMany(x => (ICollection<Price>) x.Prices).WithOne(x => (Product) x.Product)
-                .HasForeignKey(x => x.ProductId);
+                .HasForeignKey(x => x.ProductId).IsRequired();
             builder.HasMany(x => (ICollection<Size>) x.Sizes).WithOne(x => (Product) x.Product)
-                .HasForeignKey(x => x.ProductId);
+                .HasForeignKey(x => x.ProductId).IsRequired();
             builder.HasMany(x => (ICollection<Tag>) x.ExtraTags).WithOne(x => (Product) x.Product)
-                .HasForeignKey(x => x.ProductId);
+                .HasForeignKey(x => x.ProductId).IsRequired();
         }
     }
 }

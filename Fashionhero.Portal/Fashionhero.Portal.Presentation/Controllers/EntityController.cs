@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fashionhero.Portal.Presentation.Controllers
 {
-    public abstract class EntityController<TEntity, TSearchable, TDto> : ControllerBase where TEntity : class, IEntity
+    public abstract class EntityController<TEntity, TSearchable> : ControllerBase where TEntity : class, IEntity
         where TSearchable : class, ISearchable, new()
-        where TDto : class, IDto
     {
-        private readonly IEntityQueryManager<TEntity, TSearchable, TDto> manager;
+        private readonly IEntityQueryManager<TEntity, TSearchable> manager;
 
-        protected EntityController(IEntityQueryManager<TEntity, TSearchable, TDto> manager)
+        protected EntityController(IEntityQueryManager<TEntity, TSearchable> manager)
         {
             this.manager = manager;
         }
@@ -60,7 +59,7 @@ namespace Fashionhero.Portal.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddSingle([FromBody] TDto entity)
+        public async Task<IActionResult> AddSingle([FromBody] TEntity entity)
         {
             try
             {
@@ -75,7 +74,7 @@ namespace Fashionhero.Portal.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TDto> entities)
+        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TEntity> entities)
         {
             try
             {

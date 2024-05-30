@@ -20,6 +20,9 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
         public string LinkPostFix { get; set; }
 
         /// <inheritdoc />
+        public string LinkBase { get; set; }
+
+        /// <inheritdoc />
         public string ModelProductNumber { get; set; }
 
         /// <inheritdoc />
@@ -27,6 +30,12 @@ namespace Fashionhero.Portal.Shared.Model.Searchable
 
         /// <inheritdoc />
         public int Id { get; set; }
+
+        /// <inheritdoc />
+        public DateTime CreatedDateTime { get; set; }
+
+        /// <inheritdoc />
+        public DateTime UpdatedDateTime { get; set; }
 
         /// <inheritdoc />
         public int ProductId { get; set; }

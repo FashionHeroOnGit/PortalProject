@@ -16,7 +16,7 @@ namespace Fashionhero.Portal.Shared.Model.Entity
         public IProduct Product { get; set; }
 
         /// <inheritdoc />
-        public float Sale { get; set; }
+        public float NormalSell { get; set; }
 
         /// <inheritdoc />
         public float? Discount { get; set; }
@@ -39,5 +39,8 @@ namespace Fashionhero.Portal.Shared.Model.Entity
 
         /// <inheritdoc />
         public DateTime UpdatedDateTime { get; set; }
+
+        /// <inheritdoc />
+        public int ReferenceId { get; set; }
     }
 }

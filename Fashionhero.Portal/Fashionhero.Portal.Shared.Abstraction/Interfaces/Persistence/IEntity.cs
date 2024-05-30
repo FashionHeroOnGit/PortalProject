@@ -2,7 +2,5 @@
 {
     public interface IEntity : ISearchable
     {
-        DateTime CreatedDateTime { get; set; }
-        DateTime UpdatedDateTime { get; set; }
     }
 }

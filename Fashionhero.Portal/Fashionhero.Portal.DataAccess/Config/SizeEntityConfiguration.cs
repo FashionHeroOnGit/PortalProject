@@ -12,6 +12,8 @@ namespace Fashionhero.Portal.DataAccess.Config
             base.Configure(builder);
 
             builder.HasIndex(x => x.Ean).IsUnique();
+            builder.HasIndex(x => x.ReferenceId).IsUnique();
+            builder.HasIndex(x => new {x.ProductId, x.ReferenceId, x.Primary, x.Secondary,}).IsUnique();
         }
     }
 }

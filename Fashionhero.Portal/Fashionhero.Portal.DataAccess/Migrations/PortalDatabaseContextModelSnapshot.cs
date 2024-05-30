@@ -30,6 +30,9 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ReferenceId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
 
@@ -40,6 +43,8 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ReferenceId", "Url");
 
                     b.ToTable("Images");
                 });
@@ -104,6 +109,9 @@ namespace Fashionhero.Portal.DataAccess.Migrations
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("ReferenceId", "IsoName")
+                        .IsUnique();
+
                     b.ToTable("LocaleProducts");
                 });
 
@@ -123,11 +131,14 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<float?>("Discount")
                         .HasColumnType("REAL");
 
+                    b.Property<float>("NormalSell")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float>("Sale")
-                        .HasColumnType("REAL");
+                    b.Property<int>("ReferenceId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
@@ -135,6 +146,9 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ReferenceId", "Currency")
+                        .IsUnique();
 
                     b.ToTable("Prices");
                 });
@@ -189,6 +203,10 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<long>("Ean")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("LinkBase")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LinkPostFix")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -221,7 +239,11 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasIndex("Ean")
                         .IsUnique();
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ReferenceId")
+                        .IsUnique();
+
+                    b.HasIndex("ProductId", "ReferenceId", "Primary", "Secondary")
+                        .IsUnique();
 
                     b.ToTable("Sizes");
                 });
@@ -243,6 +265,9 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ReferenceId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("TEXT");
 
@@ -253,6 +278,12 @@ namespace Fashionhero.Portal.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("Name", "ProductId")
+                        .IsUnique();
+
+                    b.HasIndex("Name", "ReferenceId")
+                        .IsUnique();
 
                     b.ToTable("Tags");
                 });
