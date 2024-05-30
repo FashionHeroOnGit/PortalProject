@@ -33,9 +33,13 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
             {
                 try
                 {
-                    ILocaleProduct locale = x.Locales.FirstOrDefault(z => z.IsoName == Constants.DANISH_ISO_NAME) ??
-                                            throw new ArgumentException(
-                                                $"Failed to find a Danish Translation of products, for filtering by {nameof(LocaleProduct.Gender)}.");
+                    ILocaleProduct? locale = x.Locales.FirstOrDefault(z => z.IsoName == Constants.DANISH_ISO_NAME);
+                    if (locale == null)
+                    {
+                        logger.LogWarning(
+                            $"Discarding {nameof(Product)} ({x.ReferenceId}), as no Danish Translation of products, for filtering by {nameof(LocaleProduct.Gender)} was found.");
+                        return false;
+                    }
 
                     if (productGenderMap.Keys.Any(z =>
                             string.Equals(locale.Gender, z, StringComparison.InvariantCultureIgnoreCase)))

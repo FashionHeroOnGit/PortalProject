@@ -204,9 +204,13 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
             {
                 try
                 {
-                    ILocaleProduct locale = x.Locales.FirstOrDefault(z => z.IsoName == Constants.DANISH_ISO_NAME) ??
-                                            throw new ArgumentException(
-                                                $"Failed to find a Danish Translation of products, for filtering by {nameof(LocaleProduct.Gender)}.");
+                    ILocaleProduct? locale = x.Locales.FirstOrDefault(z => z.IsoName == Constants.DANISH_ISO_NAME);
+                    if (locale == null)
+                    {
+                        logger.LogWarning(
+                            $"Discarding {nameof(Product)} ({x.ReferenceId}), as no Danish Translation of products, for filtering by {nameof(LocaleProduct.Type)} was found.");
+                        return false;
+                    }
 
                     if (productStyleMap.Keys.Any(z =>
                             string.Equals(locale.Type, z, StringComparison.InvariantCultureIgnoreCase)))
@@ -219,7 +223,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
                 catch (Exception e)
                 {
                     logger.LogWarning(e,
-                        $"Discarding {nameof(Product)} ({x.ReferenceId}), as some error occured during filtering by {nameof(LocaleProduct.Gender)}.");
+                        $"Discarding {nameof(Product)} ({x.ReferenceId}), as some error occured during filtering by {nameof(LocaleProduct.Type)}.");
                     return false;
                 }
             }).ToList();
