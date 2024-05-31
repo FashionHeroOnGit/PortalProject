@@ -133,6 +133,9 @@
     <None Update="Xml\LoaderServiceTests\ItAddsNewSizeDuringUpdate\Language.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Xml\SpartooServiceTests\ItReturnsFilledDocumentWhenGivenValidProducts\ExportToSpartoo.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

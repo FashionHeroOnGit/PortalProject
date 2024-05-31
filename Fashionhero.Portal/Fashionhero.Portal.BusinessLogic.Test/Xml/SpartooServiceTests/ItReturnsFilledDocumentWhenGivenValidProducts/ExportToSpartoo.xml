@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+	<products>
+		<product>
+			<reference_partenaire>some-model-product-number</reference_partenaire>
+			<manufacturers_name>Horse</manufacturers_name>
+			<product_sex>H</product_sex>
+			<product_quantity>1</product_quantity>
+			<color_id>38</color_id>
+			<product_style>10056</product_style>
+			<country_origin>DK</country_origin>
+			<languages>
+				<language>
+					<code>dk</code>
+					<product_name>Lorem Ipsum</product_name>
+					<product_description></product_description>
+					<product_color>sort</product_color>
+					<product_price>195</product_price>
+				</language>				
+			</languages>
+			<size_list>
+				<size>
+					<size_name>XL</size_name>
+					<size_quantity>1</size_quantity>
+					<size_reference>some-model-product-number</size_reference>
+					<ean>5719483876380</ean>
+				</size>				
+			</size_list>
+			<photos>
+				<url1>someLocation/someImage.jpg</url1>
+			</photos>
+		</product>
+	</products>
+</root>
