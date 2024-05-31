@@ -15,16 +15,16 @@ namespace Fashionhero.Portal.DataAccess.Manager
         }
 
         /// <inheritdoc />
-        protected override IQueryable<LocaleProduct> GetBaseQuery()
-        {
-            return context.LocaleProducts.AsQueryable();
-        }
-
-        /// <inheritdoc />
         protected override IQueryable<LocaleProduct> AddQueryArguments(
             SearchableLocaleProduct searchable, IQueryable<LocaleProduct> query)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        protected override IQueryable<LocaleProduct> GetBaseQuery()
+        {
+            return context.LocaleProducts.AsQueryable();
         }
     }
 }

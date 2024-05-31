@@ -3,7 +3,6 @@ using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Service;
 using Fashionhero.Portal.Shared.Model.Entity;
 using Jakubqwe.CurrencyConverter;
-using Jakubqwe.CurrencyConverter.CurrencyRateProviders;
 using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Services
@@ -13,7 +12,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
         private readonly ILogger<CurrencyConverterService> logger;
         private readonly ICurrencyRateProvider provider;
         private readonly Dictionary<(CurrencyCode fromCurrencyCode, CurrencyCode toCurrencyCode), decimal> rates;
-        private bool hasGatheredDefaultRates = false;
+        private bool hasGatheredDefaultRates;
 
         public CurrencyConverterService(ILogger<CurrencyConverterService> logger, ICurrencyRateProvider provider)
         {
@@ -21,12 +20,6 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             this.provider = provider;
             rates = new Dictionary<(CurrencyCode fromCurrencyCode, CurrencyCode toCurrencyCode), decimal>();
             PopulateDefaultRates();
-        }
-
-        private async Task PopulateDefaultRates()
-        {
-            await GetRate(CurrencyCode.DKK, CurrencyCode.EUR);
-            hasGatheredDefaultRates = true;
         }
 
         /// <inheritdoc />
@@ -37,7 +30,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
 
             decimal rate = await GetRate(fromPrice.Currency, toCurrency);
 
-            return new Price()
+            return new Price
             {
                 Discount = fromPrice.Discount != null ? Math.Round((decimal) (fromPrice.Discount * rate), 2) : default,
                 NormalSell = Math.Round(fromPrice.NormalSell * rate, 2),
@@ -61,6 +54,12 @@ namespace Fashionhero.Portal.BusinessLogic.Services
         private static Currency ConvertCurrencyCodeToJakubweVersion(CurrencyCode code)
         {
             return Enum.Parse<Currency>(code.ToString());
+        }
+
+        private async Task PopulateDefaultRates()
+        {
+            await GetRate(CurrencyCode.DKK, CurrencyCode.EUR);
+            hasGatheredDefaultRates = true;
         }
     }
 }

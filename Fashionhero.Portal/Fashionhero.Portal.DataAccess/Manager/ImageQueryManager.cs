@@ -14,15 +14,15 @@ namespace Fashionhero.Portal.DataAccess.Manager
         }
 
         /// <inheritdoc />
-        protected override IQueryable<Image> GetBaseQuery()
-        {
-            return context.Images.AsQueryable();
-        }
-
-        /// <inheritdoc />
         protected override IQueryable<Image> AddQueryArguments(SearchableImage searchable, IQueryable<Image> query)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        protected override IQueryable<Image> GetBaseQuery()
+        {
+            return context.Images.AsQueryable();
         }
     }
 }

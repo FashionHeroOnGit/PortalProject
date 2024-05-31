@@ -52,9 +52,99 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             await productManager.AddEntities(productsToAdd.Cast<Product>().ToList());
         }
 
+        private static bool ChooseSizeXmlElements(XElement element)
+        {
+            XElement linkElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_LINK);
+            XElement eanElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_EAN);
+            XElement primarySizeElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_SIZE_A);
+
+            bool containsQuestionMark = linkElement.Value.Contains('?');
+            bool isEmptyEan = eanElement.IsEmptyValue();
+
+            if (containsQuestionMark && !isEmptyEan)
+                return true;
+            if (eanElement.Value.Contains("X23"))
+                return true;
+            return !primarySizeElement.Value.Contains(',') && !containsQuestionMark && !isEmptyEan;
+        }
+
         private static XDocument GetDocument(string xml)
         {
             return XDocument.Parse(xml, LoadOptions.PreserveWhitespace);
+        }
+
+        private static List<TResult> GetExceptedList<TEntity, TResult>(
+            ICollection<TEntity> sourceOne, ICollection<TEntity> sourceTwo, Func<TEntity, TResult> selector)
+            where TEntity : IEntity
+        {
+            return sourceOne.Select(selector).Except(sourceTwo.Select(selector)).ToList();
+        }
+
+        private static Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
+            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
+        {
+            ILocaleProduct loadedLocaleProduct =
+                loadedLocaleProducts.FirstOrDefault(x => x.IsoName == databaseLocaleProduct.IsoName) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(LocaleProduct)} with following {nameof(ILocaleProduct.IsoName)} ({databaseLocaleProduct.IsoName}), but none was found.");
+
+            databaseLocaleProduct.Colour = loadedLocaleProduct.Colour;
+            databaseLocaleProduct.CountryOrigin = loadedLocaleProduct.CountryOrigin;
+            databaseLocaleProduct.Gender = loadedLocaleProduct.Gender;
+            databaseLocaleProduct.Description = loadedLocaleProduct.Description;
+            databaseLocaleProduct.Title = loadedLocaleProduct.Title;
+            databaseLocaleProduct.Type = loadedLocaleProduct.Type;
+            databaseLocaleProduct.LocalType = loadedLocaleProduct.LocalType;
+            databaseLocaleProduct.Material = loadedLocaleProduct.Material;
+
+            return Task.FromResult(databaseLocaleProduct);
+        }
+
+        private static Task<IPrice> MapLoadedPricesToDatabasePrice(
+            ICollection<IPrice> loadedPrices, IPrice databasePrice)
+        {
+            IPrice loadedPrice =
+                loadedPrices.FirstOrDefault(x =>
+                    x.Currency == databasePrice.Currency && x.ReferenceId == databasePrice.ReferenceId) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(Price)} with following {nameof(ISize.ReferenceId)} ({databasePrice.ReferenceId}) " +
+                    $"and {nameof(IPrice.Currency)} ({databasePrice.Currency}), but none was found.");
+
+            databasePrice.Discount = loadedPrice.Discount;
+            databasePrice.NormalSell = loadedPrice.NormalSell;
+
+            return Task.FromResult(databasePrice);
+        }
+
+        private static Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
+        {
+            ISize loadedSize = loadedSizes.FirstOrDefault(x => x.ReferenceId == databaseSize.ReferenceId) ??
+                               throw new ArgumentException(
+                                   $"Expected to find a loaded {nameof(Size)} with following {nameof(ISize.ReferenceId)} ({databaseSize.ReferenceId}), but none was found.");
+
+            databaseSize.Quantity = loadedSize.Quantity;
+            databaseSize.LinkBase = loadedSize.LinkBase;
+            databaseSize.ModelProductNumber = loadedSize.ModelProductNumber;
+            databaseSize.LinkPostFix = loadedSize.LinkPostFix;
+            databaseSize.Primary = loadedSize.Primary;
+            databaseSize.Secondary = loadedSize.Secondary;
+            //databaseSize.Ean = loadedSize.Ean; // Ean Should not get updated, according to Thomas.
+
+            return Task.FromResult(databaseSize);
+        }
+
+        private static Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
+        {
+            ITag loadedTag =
+                loadedTags.FirstOrDefault(x =>
+                    x.Name == databaseTag.Name && x.ReferenceId == databaseTag.ReferenceId) ??
+                throw new ArgumentException(
+                    $"Expected to find a loaded {nameof(Tag)} with following {nameof(ITag.Name)} ({databaseTag.Name}) " +
+                    $"and {nameof(ITag.ReferenceId)} ({databaseTag.ReferenceId}), but none was found.");
+
+            databaseTag.Value = loadedTag.Value;
+
+            return Task.FromResult(databaseTag);
         }
 
         private IProduct AddNewChildren(IProduct loadedProduct, IProduct databaseProduct)
@@ -152,22 +242,6 @@ namespace Fashionhero.Portal.BusinessLogic.Services
                     $"Grew from {currentTagNames.Count} to {tagsList.Count}.");
 
             return tagsList;
-        }
-
-        private static bool ChooseSizeXmlElements(XElement element)
-        {
-            XElement linkElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_LINK);
-            XElement eanElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_EAN);
-            XElement primarySizeElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_SIZE_A);
-
-            bool containsQuestionMark = linkElement.Value.Contains('?');
-            bool isEmptyEan = eanElement.IsEmptyValue();
-
-            if (containsQuestionMark && !isEmptyEan)
-                return true;
-            if (eanElement.Value.Contains("X23"))
-                return true;
-            return !primarySizeElement.Value.Contains(',') && !containsQuestionMark && !isEmptyEan;
         }
 
         private async Task<ICollection<IProduct>> CleanLoadedProducts(ICollection<IProduct> rawLoadedProducts)
@@ -386,13 +460,6 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             });
         }
 
-        private static List<TResult> GetExceptedList<TEntity, TResult>(
-            ICollection<TEntity> sourceOne, ICollection<TEntity> sourceTwo, Func<TEntity, TResult> selector)
-            where TEntity : IEntity
-        {
-            return sourceOne.Select(selector).Except(sourceTwo.Select(selector)).ToList();
-        }
-
         private ICollection<ITag> GetExtraTags(XElement element)
         {
             var tags = new List<ITag>
@@ -489,42 +556,6 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return await Task.WhenAll(generateTasks);
         }
 
-        private static Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
-            ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
-        {
-            ILocaleProduct loadedLocaleProduct =
-                loadedLocaleProducts.FirstOrDefault(x => x.IsoName == databaseLocaleProduct.IsoName) ??
-                throw new ArgumentException(
-                    $"Expected to find a loaded {nameof(LocaleProduct)} with following {nameof(ILocaleProduct.IsoName)} ({databaseLocaleProduct.IsoName}), but none was found.");
-
-            databaseLocaleProduct.Colour = loadedLocaleProduct.Colour;
-            databaseLocaleProduct.CountryOrigin = loadedLocaleProduct.CountryOrigin;
-            databaseLocaleProduct.Gender = loadedLocaleProduct.Gender;
-            databaseLocaleProduct.Description = loadedLocaleProduct.Description;
-            databaseLocaleProduct.Title = loadedLocaleProduct.Title;
-            databaseLocaleProduct.Type = loadedLocaleProduct.Type;
-            databaseLocaleProduct.LocalType = loadedLocaleProduct.LocalType;
-            databaseLocaleProduct.Material = loadedLocaleProduct.Material;
-
-            return Task.FromResult(databaseLocaleProduct);
-        }
-
-        private static Task<IPrice> MapLoadedPricesToDatabasePrice(
-            ICollection<IPrice> loadedPrices, IPrice databasePrice)
-        {
-            IPrice loadedPrice =
-                loadedPrices.FirstOrDefault(x =>
-                    x.Currency == databasePrice.Currency && x.ReferenceId == databasePrice.ReferenceId) ??
-                throw new ArgumentException(
-                    $"Expected to find a loaded {nameof(Price)} with following {nameof(ISize.ReferenceId)} ({databasePrice.ReferenceId}) " +
-                    $"and {nameof(IPrice.Currency)} ({databasePrice.Currency}), but none was found.");
-
-            databasePrice.Discount = loadedPrice.Discount;
-            databasePrice.NormalSell = loadedPrice.NormalSell;
-
-            return Task.FromResult(databasePrice);
-        }
-
         private async Task<IProduct> MapLoadedProductsToDatabaseProduct(
             ICollection<IProduct> loadedProducts, IProduct databaseProduct)
         {
@@ -573,37 +604,6 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             var mapTasks = databaseProductsList.Select(x => MapLoadedProductsToDatabaseProduct(loadedProductsList, x))
                 .ToList();
             return await Task.WhenAll(mapTasks);
-        }
-
-        private static Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
-        {
-            ISize loadedSize = loadedSizes.FirstOrDefault(x => x.ReferenceId == databaseSize.ReferenceId) ??
-                               throw new ArgumentException(
-                                   $"Expected to find a loaded {nameof(Size)} with following {nameof(ISize.ReferenceId)} ({databaseSize.ReferenceId}), but none was found.");
-
-            databaseSize.Quantity = loadedSize.Quantity;
-            databaseSize.LinkBase = loadedSize.LinkBase;
-            databaseSize.ModelProductNumber = loadedSize.ModelProductNumber;
-            databaseSize.LinkPostFix = loadedSize.LinkPostFix;
-            databaseSize.Primary = loadedSize.Primary;
-            databaseSize.Secondary = loadedSize.Secondary;
-            //databaseSize.Ean = loadedSize.Ean; // Ean Should not get updated, according to Thomas.
-
-            return Task.FromResult(databaseSize);
-        }
-
-        private static Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
-        {
-            ITag loadedTag =
-                loadedTags.FirstOrDefault(x =>
-                    x.Name == databaseTag.Name && x.ReferenceId == databaseTag.ReferenceId) ??
-                throw new ArgumentException(
-                    $"Expected to find a loaded {nameof(Tag)} with following {nameof(ITag.Name)} ({databaseTag.Name}) " +
-                    $"and {nameof(ITag.ReferenceId)} ({databaseTag.ReferenceId}), but none was found.");
-
-            databaseTag.Value = loadedTag.Value;
-
-            return Task.FromResult(databaseTag);
         }
 
         private async Task<ICollection<ILocaleProduct>> ProcessLanguageXml(Dictionary<string, string> isoLanguageXmls)

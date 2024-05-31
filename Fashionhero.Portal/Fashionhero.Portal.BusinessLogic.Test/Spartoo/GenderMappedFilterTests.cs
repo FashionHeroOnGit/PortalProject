@@ -20,6 +20,93 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             mockedLogger = new Mock<ILogger<GenderMappedFilter>>();
         }
 
+        private static ICollection<IProduct> GenerateEmptyProductsList()
+        {
+            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
+        }
+
+        private static ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "dk",
+                            Gender = "invalid",
+                        },
+                    },
+                },
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "dk",
+                            Gender = "invalid",
+                        },
+                    },
+                },
+            ]).Cast<IProduct>().ToList();
+        }
+
+        private static ICollection<IProduct> GenerateInvalidProductsWithMissingDanishTranslation()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "en",
+                        },
+                    },
+                },
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "en",
+                        },
+                    },
+                },
+            ]).Cast<IProduct>().ToList();
+        }
+
+        private static ICollection<IProduct> GenerateValidProducts()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "dk",
+                            Gender = "Mand",
+                        },
+                    },
+                },
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        new LocaleProduct
+                        {
+                            IsoName = "dk",
+                            Gender = "Mand",
+                        },
+                    },
+                },
+            ]).Cast<IProduct>().ToList();
+        }
+
         [Fact]
         public void ItDoesNotRemovesProductsWhenApplyingTheFilter()
         {
@@ -138,93 +225,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             bool actual = sut.IsMapperOfType(MapType.SPARTOO_GENDER);
 
             actual.Should().Be(expected);
-        }
-
-        private static ICollection<IProduct> GenerateEmptyProductsList()
-        {
-            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
-        }
-
-        private static ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "dk",
-                            Gender = "invalid",
-                        },
-                    },
-                },
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "dk",
-                            Gender = "invalid",
-                        },
-                    },
-                },
-            ]).Cast<IProduct>().ToList();
-        }
-
-        private static ICollection<IProduct> GenerateInvalidProductsWithMissingDanishTranslation()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "en",
-                        },
-                    },
-                },
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "en",
-                        },
-                    },
-                },
-            ]).Cast<IProduct>().ToList();
-        }
-
-        private static ICollection<IProduct> GenerateValidProducts()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "dk",
-                            Gender = "Mand",
-                        },
-                    },
-                },
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        new LocaleProduct
-                        {
-                            IsoName = "dk",
-                            Gender = "Mand",
-                        },
-                    },
-                },
-            ]).Cast<IProduct>().ToList();
         }
     }
 }

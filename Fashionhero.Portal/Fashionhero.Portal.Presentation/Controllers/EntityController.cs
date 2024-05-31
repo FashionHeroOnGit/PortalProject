@@ -13,6 +13,66 @@ namespace Fashionhero.Portal.Presentation.Controllers
             this.manager = manager;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TEntity> entities)
+        {
+            try
+            {
+                var newEntities = await manager.AddEntities(entities);
+                return Ok(newEntities);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSingle([FromBody] TEntity entity)
+        {
+            try
+            {
+                TEntity newPayment = await manager.AddEntity(entity);
+                return Ok(newPayment);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        [HttpDelete("id")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                await manager.DeleteEntityById(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteByQuery([FromBody] TSearchable searchable)
+        {
+            try
+            {
+                await manager.DeleteEntity(searchable);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -58,51 +118,6 @@ namespace Fashionhero.Portal.Presentation.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddSingle([FromBody] TEntity entity)
-        {
-            try
-            {
-                TEntity newPayment = await manager.AddEntity(entity);
-                return Ok(newPayment);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TEntity> entities)
-        {
-            try
-            {
-                var newEntities = await manager.AddEntities(entities);
-                return Ok(newEntities);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateSingle([FromBody] TEntity entity)
-        {
-            try
-            {
-                TEntity updateEntity = await manager.UpdateEntity(entity);
-                return Ok(updateEntity);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
         [HttpPut]
         public async Task<IActionResult> UpdateMultiple([FromBody] IEnumerable<TEntity> entities)
         {
@@ -118,28 +133,13 @@ namespace Fashionhero.Portal.Presentation.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteByQuery([FromBody] TSearchable searchable)
+        [HttpPut]
+        public async Task<IActionResult> UpdateSingle([FromBody] TEntity entity)
         {
             try
             {
-                await manager.DeleteEntity(searchable);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        [HttpDelete("id")]
-        public async Task<IActionResult> DeleteById(int id)
-        {
-            try
-            {
-                await manager.DeleteEntityById(id);
-                return Ok();
+                TEntity updateEntity = await manager.UpdateEntity(entity);
+                return Ok(updateEntity);
             }
             catch (Exception e)
             {

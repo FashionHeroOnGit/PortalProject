@@ -1,7 +1,5 @@
 ﻿using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces;
-using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
-using Microsoft.Extensions.Logging;
 
 namespace Fashionhero.Portal.BusinessLogic.Spartoo
 {
@@ -46,7 +44,7 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         public object GetDictionaryValue(object key)
         {
             if (key.GetType() != typeof(string))
-                throw new ArgumentException($"Expected key to be of type string");
+                throw new ArgumentException("Expected key to be of type string");
 
             bool success = colourIdMap.TryGetValue((string) key, out int result);
             return success ? result : 534;

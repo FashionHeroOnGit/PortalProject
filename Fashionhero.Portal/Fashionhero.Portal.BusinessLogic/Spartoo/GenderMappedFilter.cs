@@ -60,18 +60,18 @@ namespace Fashionhero.Portal.BusinessLogic.Spartoo
         }
 
         /// <inheritdoc />
-        public object GetDictionaryValue(object key)
-        {
-            if (key.GetType() != typeof(string))
-                throw new ArgumentException($"Expected key to be of type string");
-
-            return productGenderMap.GetValueOrDefault((string) key);
-        }
-
-        /// <inheritdoc />
         public bool IsFilterOfType(FilterType filterType)
         {
             return filterType == FilterType.SPARTOO_GENDER;
+        }
+
+        /// <inheritdoc />
+        public object GetDictionaryValue(object key)
+        {
+            if (key.GetType() != typeof(string))
+                throw new ArgumentException("Expected key to be of type string");
+
+            return productGenderMap.GetValueOrDefault((string) key);
         }
 
         /// <inheritdoc />

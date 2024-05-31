@@ -43,9 +43,12 @@ namespace Fashionhero.Portal.Presentation.Core
             SetupApplication(app);
         }
 
-        protected void AddModule(IStartupModule module)
+        public void SetupApplication(IApplicationBuilder? app = null)
         {
-            _modules.Add(module);
+            app ??= new ApplicationBuilder(ServiceProvider);
+
+            foreach (IStartupModule module in _modules)
+                module.ConfigureApplication(app);
         }
 
         public void SetupServices(IServiceCollection? services = null)
@@ -58,12 +61,9 @@ namespace Fashionhero.Portal.Presentation.Core
             ServiceProvider = Services.BuildServiceProvider();
         }
 
-        public void SetupApplication(IApplicationBuilder? app = null)
+        protected void AddModule(IStartupModule module)
         {
-            app ??= new ApplicationBuilder(ServiceProvider);
-
-            foreach (IStartupModule module in _modules)
-                module.ConfigureApplication(app);
+            _modules.Add(module);
         }
     }
 }

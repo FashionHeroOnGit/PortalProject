@@ -7,8 +7,8 @@ namespace Fashionhero.Portal.Shared.Abstraction.Enums
 {
     // Copied from: https://stackoverflow.com/questions/52961117/looking-for-a-world-currency-enum-with-currency-symbols-in-the-display
     /// <summary>
-    /// Enumeration of ISO 4217 currency codes, indexed with their respective ISO 4217 numeric currency codes. 
-    /// Only codes support in .Net with RegionInfo objects are listed
+    ///     Enumeration of ISO 4217 currency codes, indexed with their respective ISO 4217 numeric currency codes.
+    ///     Only codes support in .Net with RegionInfo objects are listed
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CurrencyCode
@@ -554,6 +554,6 @@ namespace Fashionhero.Portal.Shared.Abstraction.Enums
         ZMW = 967,
 
         [EnumMember(Value = "ZWL")] [Description("Zimbabwean dollar")]
-        ZWL = 932
+        ZWL = 932,
     }
 }

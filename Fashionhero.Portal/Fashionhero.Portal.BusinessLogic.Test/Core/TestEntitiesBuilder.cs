@@ -6,44 +6,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
 {
     public static class TestEntitiesBuilder
     {
-        public static ICollection<Product> BuildProducts(ICollection<Product> products)
-        {
-            return products.Select(x =>
-            {
-                var images = x.Images.Count == 0
-                    ? new List<IImage>
-                    {
-                        BuildImage(x.ReferenceId != default ? x.ReferenceId : 1),
-                    }
-                    : x.Images;
-                var localeProducts = x.Locales.Count == 0
-                    ? new List<ILocaleProduct>
-                    {
-                        BuildLocaleProduct(x.ReferenceId != default ? x.ReferenceId : 1, 1, "en", "Horse X - T", "EN",
-                            "BLACK"),
-                    }
-                    : x.Locales;
-                var sizes = x.Sizes.Count == 0
-                    ? new List<ISize>
-                    {
-                        BuildSize(1, 2, 5769403877380),
-                    }
-                    : x.Sizes;
-                var prices = x.Prices.Count == 0
-                    ? new List<IPrice>
-                    {
-                        BuildPrice(449, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.DKK),
-                        BuildPrice(60.15m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.EUR),
-                        BuildPrice(704.73m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.SEK),
-                        BuildPrice(256.63m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.PLN),
-                    }
-                    : x.Prices;
-                var tags = x.ExtraTags;
-                return BuildProduct(x.ReferenceId != default ? x.ReferenceId : 1, images, localeProducts, sizes, prices,
-                    tags, !string.IsNullOrWhiteSpace(x.Brand) ? x.Brand : "Horse");
-            }).ToList();
-        }
-
         public static Image BuildImage(int referenceId, string url = "someImage/")
         {
             return new Image
@@ -104,6 +66,44 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
                 Category = category,
                 ModelProductNumber = modelProductNumber,
             };
+        }
+
+        public static ICollection<Product> BuildProducts(ICollection<Product> products)
+        {
+            return products.Select(x =>
+            {
+                var images = x.Images.Count == 0
+                    ? new List<IImage>
+                    {
+                        BuildImage(x.ReferenceId != default ? x.ReferenceId : 1),
+                    }
+                    : x.Images;
+                var localeProducts = x.Locales.Count == 0
+                    ? new List<ILocaleProduct>
+                    {
+                        BuildLocaleProduct(x.ReferenceId != default ? x.ReferenceId : 1, 1, "en", "Horse X - T", "EN",
+                            "BLACK"),
+                    }
+                    : x.Locales;
+                var sizes = x.Sizes.Count == 0
+                    ? new List<ISize>
+                    {
+                        BuildSize(1, 2, 5769403877380),
+                    }
+                    : x.Sizes;
+                var prices = x.Prices.Count == 0
+                    ? new List<IPrice>
+                    {
+                        BuildPrice(449, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.DKK),
+                        BuildPrice(60.15m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.EUR),
+                        BuildPrice(704.73m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.SEK),
+                        BuildPrice(256.63m, x.ReferenceId != default ? x.ReferenceId : 1, CurrencyCode.PLN),
+                    }
+                    : x.Prices;
+                var tags = x.ExtraTags;
+                return BuildProduct(x.ReferenceId != default ? x.ReferenceId : 1, images, localeProducts, sizes, prices,
+                    tags, !string.IsNullOrWhiteSpace(x.Brand) ? x.Brand : "Horse");
+            }).ToList();
         }
 
         public static Size BuildSize(

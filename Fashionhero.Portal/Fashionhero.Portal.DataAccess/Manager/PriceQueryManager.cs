@@ -14,15 +14,15 @@ namespace Fashionhero.Portal.DataAccess.Manager
         }
 
         /// <inheritdoc />
-        protected override IQueryable<Price> GetBaseQuery()
-        {
-            return context.Prices.AsQueryable();
-        }
-
-        /// <inheritdoc />
         protected override IQueryable<Price> AddQueryArguments(SearchablePrice searchable, IQueryable<Price> query)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        protected override IQueryable<Price> GetBaseQuery()
+        {
+            return context.Prices.AsQueryable();
         }
     }
 }

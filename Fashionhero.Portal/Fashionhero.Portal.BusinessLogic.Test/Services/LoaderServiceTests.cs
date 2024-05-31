@@ -1,7 +1,6 @@
 ﻿using Fashionhero.Portal.BusinessLogic.Services;
 using Fashionhero.Portal.BusinessLogic.Test.Core;
 using Fashionhero.Portal.BusinessLogic.Test.Extensions;
-using Fashionhero.Portal.Shared.Abstraction.Enums;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Model.Entity;
 using Fashionhero.Portal.Shared.Abstraction.Interfaces.Persistence;
 using Fashionhero.Portal.Shared.Model.Entity;
@@ -27,6 +26,11 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
                 .ReturnsAsync(new List<Product>().AsEnumerable());
         }
 
+        private static ICollection<Product> BareBoneData()
+        {
+            return TestEntitiesBuilder.BuildProducts([new Product(),]);
+        }
+
         private static string BuildInventoryTestFilePath(string testName)
         {
             return $@".\Xml\{nameof(LoaderServiceTests)}\{testName}\Inventory.xml";
@@ -36,6 +40,78 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
         {
             return
                 $@".\Xml\{nameof(LoaderServiceTests)}\{testName}\Language{(fileNumber != default ? fileNumber.ToString() : "")}.xml";
+        }
+
+        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                    },
+                },
+            ]);
+        }
+
+        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Locales = new List<ILocaleProduct>
+                    {
+                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
+                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "da", "Horse X - T", "DA", "BLACK"),
+                    },
+                },
+            ]);
+        }
+
+        private static ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Sizes = new List<ISize>
+                    {
+                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                    },
+                },
+            ]);
+        }
+
+        private static ICollection<Product> ItAddsNewSizeDuringUpdateExpectedData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Sizes = new List<ISize>
+                    {
+                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
+                        TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
+                    },
+                },
+            ]);
+        }
+
+        private static ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product {ReferenceId = 1,},
+                new Product {ReferenceId = 2,},
+                new Product {ReferenceId = 3,},
+                new Product {ReferenceId = 4,},
+            ]);
+        }
+
+        private static ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product {ReferenceId = 3,},
+                new Product {ReferenceId = 4,},
+            ]);
         }
 
         [Fact]
@@ -267,11 +343,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
         }
 
-        private static ICollection<Product> BareBoneData()
-        {
-            return TestEntitiesBuilder.BuildProducts([new Product(),]);
-        }
-
         private (string, Dictionary<string, string>) GetSutArguments(string testName)
         {
             string inventoryXmlFile = BuildInventoryTestFilePath(testName);
@@ -286,78 +357,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             };
 
             return (inventoryXml, languageXml);
-        }
-
-        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
-                    },
-                },
-            ]);
-        }
-
-        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Locales = new List<ILocaleProduct>
-                    {
-                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "en", "Horse X - T", "EN", "BLACK"),
-                        TestEntitiesBuilder.BuildLocaleProduct(1, 1, "da", "Horse X - T", "DA", "BLACK"),
-                    },
-                },
-            ]);
-        }
-
-        private static ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Sizes = new List<ISize>
-                    {
-                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                    },
-                },
-            ]);
-        }
-
-        private static ICollection<Product> ItAddsNewSizeDuringUpdateExpectedData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Sizes = new List<ISize>
-                    {
-                        TestEntitiesBuilder.BuildSize(1, 2, 5769403877380),
-                        TestEntitiesBuilder.BuildSize(1, 3, 5763404879388),
-                    },
-                },
-            ]);
-        }
-
-        private static ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product {ReferenceId = 1,},
-                new Product {ReferenceId = 2,},
-                new Product {ReferenceId = 3,},
-                new Product {ReferenceId = 4,},
-            ]);
-        }
-
-        private static ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product {ReferenceId = 3,},
-                new Product {ReferenceId = 4,},
-            ]);
         }
     }
 }

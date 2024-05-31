@@ -10,9 +10,9 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
 {
     public class SpartooServiceTests
     {
+        private readonly Mock<ICurrencyConverterService> mockedConverterService;
         private readonly Mock<ILogger<SpartooService>> mockedLogger;
         private readonly Mock<IEntityQueryManager<Product, SearchableProduct>> mockedProductManager;
-        private readonly Mock<ICurrencyConverterService> mockedConverterService;
 
         public SpartooServiceTests()
         {

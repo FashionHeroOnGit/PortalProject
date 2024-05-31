@@ -20,6 +20,37 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             mockedLogger = new Mock<ILogger<ImageFilter>>();
         }
 
+        private static ICollection<IProduct> GenerateEmptyProducts()
+        {
+            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
+        }
+
+        private static ICollection<IProduct> GenerateInvalidProducts()
+        {
+            return TestEntitiesBuilder.BuildProducts([
+                new Product
+                {
+                    Images = new List<IImage>
+                    {
+                        new Image
+                        {
+                            Url = "some-invalid-extension.png",
+                        },
+                    },
+                },
+                new Product
+                {
+                    Images = new List<IImage>
+                    {
+                        new Image
+                        {
+                            Url = "some-invalid-extension.png",
+                        },
+                    },
+                },
+            ]).Cast<IProduct>().ToList();
+        }
+
         private static ICollection<IProduct> GenerateValidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
@@ -104,37 +135,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             bool actual = sut.IsFilterOfType(FilterType.SPARTOO_IMAGE);
 
             actual.Should().Be(expected);
-        }
-
-        private static ICollection<IProduct> GenerateEmptyProducts()
-        {
-            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
-        }
-
-        private static ICollection<IProduct> GenerateInvalidProducts()
-        {
-            return TestEntitiesBuilder.BuildProducts([
-                new Product
-                {
-                    Images = new List<IImage>
-                    {
-                        new Image
-                        {
-                            Url = "some-invalid-extension.png",
-                        },
-                    },
-                },
-                new Product
-                {
-                    Images = new List<IImage>
-                    {
-                        new Image
-                        {
-                            Url = "some-invalid-extension.png",
-                        },
-                    },
-                },
-            ]).Cast<IProduct>().ToList();
         }
     }
 }
