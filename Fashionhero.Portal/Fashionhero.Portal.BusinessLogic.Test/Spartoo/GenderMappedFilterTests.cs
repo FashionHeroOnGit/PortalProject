@@ -20,11 +20,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             mockedLogger = new Mock<ILogger<GenderMappedFilter>>();
         }
 
-        private static ICollection<IProduct> GenerateEmptyProductsList()
-        {
-            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
-        }
-
         private static ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
         {
             return TestEntitiesBuilder.BuildProducts([
@@ -150,7 +145,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItRemovesInvalidProductsWhenApplyingTheFilter()
         {
-            var expected = GenerateEmptyProductsList();
+            var expected = TestEntitiesBuilder.GenerateEmptyProductsList();
             var original = GenerateInvalidProductsWithMissingDanishTranslation();
             var sut = new GenderMappedFilter(mockedLogger.Object);
 

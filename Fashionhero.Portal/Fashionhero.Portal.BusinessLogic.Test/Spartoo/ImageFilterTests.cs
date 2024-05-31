@@ -20,11 +20,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             mockedLogger = new Mock<ILogger<ImageFilter>>();
         }
 
-        private static ICollection<IProduct> GenerateEmptyProducts()
-        {
-            return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
-        }
-
         private static ICollection<IProduct> GenerateInvalidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
@@ -106,7 +101,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItRemovesInvalidProductsWhenApplyingTheFilter()
         {
-            var expected = GenerateEmptyProducts();
+            var expected = TestEntitiesBuilder.GenerateEmptyProductsList();
             var original = GenerateInvalidProducts();
             var sut = new ImageFilter(mockedLogger.Object);
 

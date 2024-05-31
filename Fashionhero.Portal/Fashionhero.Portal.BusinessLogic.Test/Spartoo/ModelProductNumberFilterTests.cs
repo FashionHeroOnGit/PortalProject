@@ -11,28 +11,41 @@ using Xunit;
 
 namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
 {
-    public class CurrencyFilterTests
+    public class ModelProductNumberFilterTests
     {
-        private readonly Mock<ILogger<CurrencyFilter>> mockedLogger;
+        private readonly Mock<ILogger<ModelProductNumberFilter>> mockedLogger;
 
-        public CurrencyFilterTests()
+        public ModelProductNumberFilterTests()
         {
-            mockedLogger = new Mock<ILogger<CurrencyFilter>>();
+            mockedLogger = new Mock<ILogger<ModelProductNumberFilter>>();
         }
+
 
         private static ICollection<IProduct> GenerateInvalidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.USD,},},},
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.USD,},},},
-            ]).Cast<IProduct>().ToList();
+                new Product
+                {
+                    ModelProductNumber = "",
+                },
+                new Product
+                {
+                    ModelProductNumber = "",
+                },
+            ], true).Cast<IProduct>().ToList();
         }
 
         private static ICollection<IProduct> GenerateValidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.DKK,},},},
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.DKK,},},},
+                new Product
+                {
+                    ModelProductNumber = "some-model-product-number",
+                },
+                new Product
+                {
+                    ModelProductNumber = "some-model-product-number",
+                },
             ]).Cast<IProduct>().ToList();
         }
 
@@ -41,7 +54,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             var expected = GenerateValidProducts();
             var original = GenerateValidProducts();
-            var sut = new CurrencyFilter(mockedLogger.Object);
+            var sut = new ModelProductNumberFilter(mockedLogger.Object);
 
             var actual = sut.FilterProducts(original);
 
@@ -51,9 +64,9 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItLogsWarningWhenFilterDiscardsProduct()
         {
-            const string expectedLogMessageFragment = "as it does not have a";
+            const string expectedLogMessageFragment = "as it is missing a Model Product Number";
             var original = GenerateInvalidProducts();
-            var sut = new CurrencyFilter(mockedLogger.Object);
+            var sut = new ModelProductNumberFilter(mockedLogger.Object);
 
             sut.FilterProducts(original);
 
@@ -67,7 +80,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             var expected = TestEntitiesBuilder.GenerateEmptyProductsList();
             var original = GenerateInvalidProducts();
-            var sut = new CurrencyFilter(mockedLogger.Object);
+            var sut = new ModelProductNumberFilter(mockedLogger.Object);
 
             var actual = sut.FilterProducts(original);
 
@@ -75,23 +88,23 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         }
 
         [Fact]
-        public void ItSaysFalseWhenAskedIfFilterIsAnythingOtherThanCurrencyFilter()
+        public void ItSaysFalseWhenAskedIfFilterIsAnythingOtherThanModelProductNumberFilter()
         {
             const bool expected = false;
-            var sut = new CurrencyFilter(mockedLogger.Object);
+            var sut = new ModelProductNumberFilter(mockedLogger.Object);
 
-            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_TYPE);
+            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_IMAGE);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void ItSaysTrueWhenAskedIfFilterIsCurrencyFilter()
+        public void ItSaysTrueWhenAskedIfFilterIsModelProductNumberFilter()
         {
             const bool expected = true;
-            var sut = new CurrencyFilter(mockedLogger.Object);
+            var sut = new ModelProductNumberFilter(mockedLogger.Object);
 
-            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_CURRENCY);
+            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_MODEL_PRODUCT_NUMBER);
 
             actual.Should().Be(expected);
         }

@@ -49,26 +49,28 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
 
         public static Product BuildProduct(
             int referenceId, ICollection<IImage> images, ICollection<ILocaleProduct> locales, ICollection<ISize> sizes,
-            ICollection<IPrice> prices, ICollection<ITag> extraTags, string brand, string category = "Cat",
-            string linkBase = "someLink/", string modelProductNumber = "some-model-number")
+            ICollection<IPrice> prices, ICollection<ITag> extraTags, string brand, string category, string linkBase,
+            string modelProductNumber, bool useDefinedOnly = false)
         {
             return new Product
             {
                 Locales = locales,
-                ReferenceId = referenceId,
+                ReferenceId = referenceId != default ? referenceId : 1,
                 Sizes = sizes,
                 ExtraTags = extraTags,
                 Images = images,
                 Prices = prices,
-                LinkBase = linkBase,
-                Manufacturer = brand,
-                Brand = brand,
-                Category = category,
-                ModelProductNumber = modelProductNumber,
+                LinkBase = useDefinedOnly || !string.IsNullOrWhiteSpace(linkBase) ? linkBase : "someLink/",
+                Manufacturer = useDefinedOnly || !string.IsNullOrWhiteSpace(brand) ? brand : "Horse",
+                Brand = useDefinedOnly || !string.IsNullOrWhiteSpace(brand) ? brand : "Horse",
+                Category = useDefinedOnly || !string.IsNullOrWhiteSpace(category) ? category : "Cat",
+                ModelProductNumber = useDefinedOnly || !string.IsNullOrWhiteSpace(modelProductNumber)
+                    ? modelProductNumber
+                    : "some-model-number",
             };
         }
 
-        public static ICollection<Product> BuildProducts(ICollection<Product> products)
+        public static ICollection<Product> BuildProducts(ICollection<Product> products, bool useDefinedOnly = false)
         {
             return products.Select(x =>
             {
@@ -101,8 +103,8 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
                     }
                     : x.Prices;
                 var tags = x.ExtraTags;
-                return BuildProduct(x.ReferenceId != default ? x.ReferenceId : 1, images, localeProducts, sizes, prices,
-                    tags, !string.IsNullOrWhiteSpace(x.Brand) ? x.Brand : "Horse");
+                return BuildProduct(x.ReferenceId, images, localeProducts, sizes, prices, tags, x.Brand, x.Category,
+                    x.LinkBase, x.ModelProductNumber, useDefinedOnly);
             }).ToList();
         }
 
@@ -132,6 +134,11 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
                 Value = value,
                 ReferenceId = referenceId,
             };
+        }
+
+        public static ICollection<IProduct> GenerateEmptyProductsList()
+        {
+            return BuildProducts([]).Cast<IProduct>().ToList();
         }
     }
 }
