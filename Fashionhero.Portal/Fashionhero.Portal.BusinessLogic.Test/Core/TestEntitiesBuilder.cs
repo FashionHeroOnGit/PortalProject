@@ -6,7 +6,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Core
 {
     public static class TestEntitiesBuilder
     {
-        public static Image BuildImage(int referenceId, string url = "someImage/")
+        public static Image BuildImage(int referenceId, string url = "someImageLocation/someImage.jpg")
         {
             return new Image
             {

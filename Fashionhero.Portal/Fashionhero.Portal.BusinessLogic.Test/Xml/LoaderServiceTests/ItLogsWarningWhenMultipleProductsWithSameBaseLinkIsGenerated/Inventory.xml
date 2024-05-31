@@ -4,7 +4,7 @@
 	<product>
 		<id>1</id>
 		<link>someLink/</link>
-		<image_link>someImage/</image_link>
+		<image_link>someImageLocation/someImage.jpg</image_link>
 		<condition></condition>
 		<availability>in stock</availability>
 		<regular_price>449</regular_price>
@@ -28,7 +28,7 @@
 	<product>
 		<id>2</id>
 		<link>someLink/</link>
-		<image_link>someImage/</image_link>
+		<image_link>someImageLocation/someImage.jpg</image_link>
 		<condition></condition>
 		<availability>in stock</availability>
 		<regular_price>449</regular_price>
@@ -52,7 +52,7 @@
 	<product>
 		<id>3</id>
 		<link>someLink/?attribute_pa_stoerrelser=T</link>
-		<image_link>someImage/</image_link>
+		<image_link>someImageLocation/someImage.jpg</image_link>
 		<condition></condition>
 		<availability>in stock</availability>
 		<regular_price>449</regular_price>
