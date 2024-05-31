@@ -6,7 +6,7 @@
 
         public const string SPARTOO_ROOT = "root";
 
-        public const string SPARTOO_PRODUCTS = "products";
+        public const string SPARTOO_PRODUCTS_ROOT = "products";
 
         public const string SPARTOO_PRODUCT = "product";
 

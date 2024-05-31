@@ -40,7 +40,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             var generateTasks = filteredProducts.Select(BuildXmlProduct);
 
             var productElements = (await Task.WhenAll(generateTasks)).ToList();
-            var productsElement = new XElement(XmlTagConstants.SPARTOO_PRODUCTS, productElements);
+            var productsElement = new XElement(XmlTagConstants.SPARTOO_PRODUCTS_ROOT, productElements);
             var rootElement = new XElement(XmlTagConstants.SPARTOO_ROOT, productsElement);
             var xmlDocument = new XDocument(rootElement);
 
@@ -49,7 +49,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
 
         private static Task<XElement> BuildXmlPhotos(IImage image, int index)
         {
-            return Task.FromResult(new XElement(XmlTagConstants.SpartooPhotoUrl(index), image.Url));
+            return Task.FromResult(new XElement(XmlTagConstants.SpartooPhotoUrl(index + 1), image.Url));
         }
 
         private static Task<XElement> BuildXmlSize(ISize size)
