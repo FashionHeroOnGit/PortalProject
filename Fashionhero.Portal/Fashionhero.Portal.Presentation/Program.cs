@@ -1,4 +1,3 @@
-
 namespace Fashionhero.Portal.Presentation
 {
     public class Program

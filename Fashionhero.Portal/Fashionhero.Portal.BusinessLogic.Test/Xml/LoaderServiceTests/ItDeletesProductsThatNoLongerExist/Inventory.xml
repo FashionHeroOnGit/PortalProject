@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <products>
 	<product>
@@ -48,7 +48,7 @@
 		<spartoo-kode></spartoo-kode>
 		<product_category>Cat</product_category>
 	</product>
-	
+
 	<product>
 		<id>3</id>
 		<link>someLink/?attribute_pa_stoerrelser=T</link>
@@ -97,4 +97,3 @@
 		<product_category>Cat</product_category>
 	</product>
 </products>
-	
