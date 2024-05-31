@@ -43,7 +43,8 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
         {
             (string inventoryXml, var languageXml) = GetSutArguments(nameof(ItAddsNewLocaleProductDuringUpdate));
             languageXml.Add("da",
-                LoadXmlFileContent(BuildLanguageTestFilePath(nameof(ItAddsNewLocaleProductDuringUpdate), 2)));
+                TestHelpers.LoadXmlFileContent(BuildLanguageTestFilePath(nameof(ItAddsNewLocaleProductDuringUpdate),
+                    2)));
             var expectedProducts = ItAddsNewLocaleProductDuringUpdateExpectedData();
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
             mockedQueryManager.Setup(x => x.GetEntities(It.IsAny<SearchableProduct>()))
@@ -112,10 +113,10 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             (string inventoryXml, var languageXml) =
                 GetSutArguments(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate));
             languageXml.Add("da",
-                LoadXmlFileContent(
+                TestHelpers.LoadXmlFileContent(
                     BuildLanguageTestFilePath(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate), 2)));
             languageXml.Add("de",
-                LoadXmlFileContent(
+                TestHelpers.LoadXmlFileContent(
                     BuildLanguageTestFilePath(nameof(ItLogsWarningWhenManyLocaleProductsAreAttachedDuringUpdate), 3)));
             const string expectedLogMessageFragment = "large growth";
             var sut = new LoaderService(mockedLogger.Object, mockedQueryManager.Object);
@@ -266,7 +267,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             addEntitiesParameter.Should().BeEquivalentTo(expectedProducts);
         }
 
-        private ICollection<Product> BareBoneData()
+        private static ICollection<Product> BareBoneData()
         {
             return TestEntitiesBuilder.BuildProducts([new Product(),]);
         }
@@ -275,19 +276,19 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
         {
             string inventoryXmlFile = BuildInventoryTestFilePath(testName);
             string languageXmlFile = BuildLanguageTestFilePath(testName);
-            string inventoryXml = LoadXmlFileContent(inventoryXmlFile);
+            string inventoryXml = TestHelpers.LoadXmlFileContent(inventoryXmlFile);
             Dictionary<string, string> languageXml = new()
             {
                 {
                     "en",
-                    LoadXmlFileContent(languageXmlFile)
+                    TestHelpers.LoadXmlFileContent(languageXmlFile)
                 },
             };
 
             return (inventoryXml, languageXml);
         }
 
-        private ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
+        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateDatabaseData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -300,7 +301,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             ]);
         }
 
-        private ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
+        private static ICollection<Product> ItAddsNewLocaleProductDuringUpdateExpectedData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -314,7 +315,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             ]);
         }
 
-        private ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
+        private static ICollection<Product> ItAddsNewSizeDuringUpdateDatabaseData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -327,7 +328,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             ]);
         }
 
-        private ICollection<Product> ItAddsNewSizeDuringUpdateExpectedData()
+        private static ICollection<Product> ItAddsNewSizeDuringUpdateExpectedData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -341,7 +342,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             ]);
         }
 
-        private ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
+        private static ICollection<Product> ItDeletesProductsThatNoLongerExistDatabaseData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product {ReferenceId = 1,},
@@ -351,17 +352,12 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Services
             ]);
         }
 
-        private ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
+        private static ICollection<Product> ItDeletesProductsThatNoLongerExistExpectedData()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product {ReferenceId = 3,},
                 new Product {ReferenceId = 4,},
             ]);
-        }
-
-        private string LoadXmlFileContent(string fileName)
-        {
-            return File.ReadAllText(Path.Combine(@"..\..\..\", fileName));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItLogsWarningWhenFilterDiscardsProductBecauseOfInvalidGender()
         {
-            var expectedLogMessageFragment = "is not convertible to a";
+            const string expectedLogMessageFragment = "is not convertible to a";
             var original = GenerateInvalidProductsWithInvalidGenders();
             var sut = new GenderMappedFilter(mockedLogger.Object);
 
@@ -49,7 +49,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItLogsWarningWhenFilterDiscardsProductBecauseOfMissingDanishTranslation()
         {
-            var expectedLogMessageFragment = "as no Danish Translation of products";
+            const string expectedLogMessageFragment = "as no Danish Translation of products";
             var original = GenerateInvalidProductsWithMissingDanishTranslation();
             var sut = new GenderMappedFilter(mockedLogger.Object);
 
@@ -75,7 +75,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItReturnsDefaultValueWhenKeyDoesNotExistInDictionary()
         {
-            char expected = default;
+            const char expected = default;
             var sut = new GenderMappedFilter(mockedLogger.Object);
 
             object actual = sut.GetDictionaryValue("some random text that is not a key in the dictionary");
@@ -87,7 +87,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItReturnsValueFromDictionaryWhenKeyExists()
         {
-            var expected = 'H';
+            const char expected = 'H';
             var sut = new GenderMappedFilter(mockedLogger.Object);
 
             object actual = sut.GetDictionaryValue("Mand");
@@ -140,12 +140,12 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             actual.Should().Be(expected);
         }
 
-        private ICollection<IProduct> GenerateEmptyProductsList()
+        private static ICollection<IProduct> GenerateEmptyProductsList()
         {
             return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
         }
 
-        private ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
+        private static ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -173,7 +173,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             ]).Cast<IProduct>().ToList();
         }
 
-        private ICollection<IProduct> GenerateInvalidProductsWithMissingDanishTranslation()
+        private static ICollection<IProduct> GenerateInvalidProductsWithMissingDanishTranslation()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -199,7 +199,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             ]).Cast<IProduct>().ToList();
         }
 
-        private ICollection<IProduct> GenerateValidProducts()
+        private static ICollection<IProduct> GenerateValidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product

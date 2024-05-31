@@ -154,7 +154,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return tagsList;
         }
 
-        private bool ChooseSizeXmlElements(XElement element)
+        private static bool ChooseSizeXmlElements(XElement element)
         {
             XElement linkElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_LINK);
             XElement eanElement = element.GetTaggedElement(XmlTagConstants.INVENTORY_EAN);
@@ -386,7 +386,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             });
         }
 
-        private List<TResult> GetExceptedList<TEntity, TResult>(
+        private static List<TResult> GetExceptedList<TEntity, TResult>(
             ICollection<TEntity> sourceOne, ICollection<TEntity> sourceTwo, Func<TEntity, TResult> selector)
             where TEntity : IEntity
         {
@@ -489,7 +489,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return await Task.WhenAll(generateTasks);
         }
 
-        private Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
+        private static Task<ILocaleProduct> MapLoadedLocaleProductsToDatabaseLocaleProduct(
             ICollection<ILocaleProduct> loadedLocaleProducts, ILocaleProduct databaseLocaleProduct)
         {
             ILocaleProduct loadedLocaleProduct =
@@ -509,7 +509,8 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return Task.FromResult(databaseLocaleProduct);
         }
 
-        private Task<IPrice> MapLoadedPricesToDatabasePrice(ICollection<IPrice> loadedPrices, IPrice databasePrice)
+        private static Task<IPrice> MapLoadedPricesToDatabasePrice(
+            ICollection<IPrice> loadedPrices, IPrice databasePrice)
         {
             IPrice loadedPrice =
                 loadedPrices.FirstOrDefault(x =>
@@ -574,7 +575,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return await Task.WhenAll(mapTasks);
         }
 
-        private Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
+        private static Task<ISize> MapLoadedSizesToDatabaseSize(ICollection<ISize> loadedSizes, ISize databaseSize)
         {
             ISize loadedSize = loadedSizes.FirstOrDefault(x => x.ReferenceId == databaseSize.ReferenceId) ??
                                throw new ArgumentException(
@@ -591,7 +592,7 @@ namespace Fashionhero.Portal.BusinessLogic.Services
             return Task.FromResult(databaseSize);
         }
 
-        private Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
+        private static Task<ITag> MapLoadedTagToDatabaseTag(ICollection<ITag> loadedTags, ITag databaseTag)
         {
             ITag loadedTag =
                 loadedTags.FirstOrDefault(x =>

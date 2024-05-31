@@ -45,7 +45,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItReturnsValueFromDictionaryWhenKeyExists()
         {
-            var expected = 1;
+            const int expected = 1;
             var sut = new ColourMapper();
 
             object actual = sut.GetDictionaryValue("hvid");
@@ -57,7 +57,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItReturnsDefaultValueWhenKeyDoesNotExistInDictionary()
         {
-            var expected = 534;
+            const int expected = 534;
             var sut = new ColourMapper();
 
             object actual = sut.GetDictionaryValue("some random text that is not a key in the dictionary");

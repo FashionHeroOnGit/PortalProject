@@ -70,7 +70,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItLogsWarningWhenFilterDiscardsProduct()
         {
-            var expectedLogMessageFragment = "as it does not have a";
+            const string expectedLogMessageFragment = "as it does not have a";
             var original = GenerateInvalidProducts();
             var sut = new CurrencyFilter(mockedLogger.Object);
 
@@ -81,12 +81,12 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             logInvocation.Should().NotBeNull();
         }
 
-        private ICollection<IProduct> GenerateEmptyProducts()
+        private static ICollection<IProduct> GenerateEmptyProducts()
         {
             return TestEntitiesBuilder.BuildProducts([]).Cast<IProduct>().ToList();
         }
 
-        private ICollection<IProduct> GenerateInvalidProducts()
+        private static ICollection<IProduct> GenerateInvalidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.USD,},},},
@@ -94,7 +94,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
             ]).Cast<IProduct>().ToList();
         }
 
-        private ICollection<IProduct> GenerateValidProducts()
+        private static ICollection<IProduct> GenerateValidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product() {Prices = new List<IPrice>() {new Price() {Currency = CurrencyCode.DKK,},},},
