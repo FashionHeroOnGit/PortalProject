@@ -23,8 +23,26 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         private static ICollection<IProduct> GenerateInvalidProducts()
         {
             return TestEntitiesBuilder.BuildProducts([
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.USD,},},},
-                new Product {Prices = new List<IPrice> {new Price {Currency = CurrencyCode.USD,},},},
+                new Product
+                {
+                    Prices = new List<IPrice>
+                    {
+                        new Price
+                        {
+                            Currency = CurrencyCode.USD,
+                        },
+                    },
+                },
+                new Product
+                {
+                    Prices = new List<IPrice>
+                    {
+                        new Price
+                        {
+                            Currency = CurrencyCode.USD,
+                        },
+                    },
+                },
             ]).Cast<IProduct>().ToList();
         }
 

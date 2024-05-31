@@ -10,13 +10,6 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
 {
     public class ColourMapperTests
     {
-        private readonly Mock<ILogger<SpartooService>> mockedLogger;
-
-        public ColourMapperTests()
-        {
-            mockedLogger = new Mock<ILogger<SpartooService>>();
-        }
-
         [Fact]
         public void ItReturnsDefaultValueWhenKeyDoesNotExistInDictionary()
         {
