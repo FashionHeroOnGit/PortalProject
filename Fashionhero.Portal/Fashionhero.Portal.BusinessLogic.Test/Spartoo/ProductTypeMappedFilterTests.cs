@@ -11,16 +11,16 @@ using Xunit;
 
 namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
 {
-    public class GenderMappedFilterTests
+    public class ProductTypeMappedFilterTests
     {
-        private readonly Mock<ILogger<GenderMappedFilter>> mockedLogger;
+        private readonly Mock<ILogger<ProductTypeMappedFilter>> mockedLogger;
 
-        public GenderMappedFilterTests()
+        public ProductTypeMappedFilterTests()
         {
-            mockedLogger = new Mock<ILogger<GenderMappedFilter>>();
+            mockedLogger = new Mock<ILogger<ProductTypeMappedFilter>>();
         }
 
-        private static ICollection<IProduct> GenerateInvalidProductsWithInvalidGenders()
+        private static ICollection<IProduct> GenerateInvalidProductsWithInvalidType()
         {
             return TestEntitiesBuilder.BuildProducts([
                 new Product
@@ -30,7 +30,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
                         new LocaleProduct
                         {
                             IsoName = "dk",
-                            Gender = "invalid",
+                            Type = "invalid",
                         },
                     },
                 },
@@ -41,7 +41,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
                         new LocaleProduct
                         {
                             IsoName = "dk",
-                            Gender = "invalid",
+                            Type = "invalid",
                         },
                     },
                 },
@@ -84,7 +84,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
                         new LocaleProduct
                         {
                             IsoName = "dk",
-                            Gender = "Mand",
+                            Type = "t-shirts",
                         },
                     },
                 },
@@ -95,7 +95,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
                         new LocaleProduct
                         {
                             IsoName = "dk",
-                            Gender = "Mand",
+                            Type = "t-shirts",
                         },
                     },
                 },
@@ -107,7 +107,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             var expected = GenerateValidProducts();
             var original = GenerateValidProducts();
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             var actual = sut.FilterProducts(original);
 
@@ -115,11 +115,11 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         }
 
         [Fact]
-        public void ItLogsWarningWhenFilterDiscardsProductBecauseOfInvalidGender()
+        public void ItLogsWarningWhenFilterDiscardsProductBecauseOfInvalidType()
         {
             const string expectedLogMessageFragment = "is not convertible to a";
-            var original = GenerateInvalidProductsWithInvalidGenders();
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var original = GenerateInvalidProductsWithInvalidType();
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             sut.FilterProducts(original);
 
@@ -133,7 +133,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             const string expectedLogMessageFragment = "as no Danish Translation of products";
             var original = GenerateInvalidProductsWithoutDanishTranslation();
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             sut.FilterProducts(original);
 
@@ -147,7 +147,7 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         {
             var expected = TestEntitiesBuilder.GenerateEmptyProductsList();
             var original = GenerateInvalidProductsWithoutDanishTranslation();
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             var actual = sut.FilterProducts(original);
 
@@ -157,32 +157,32 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         [Fact]
         public void ItReturnsDefaultValueWhenKeyDoesNotExistInDictionary()
         {
-            const char expected = default;
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            const int expected = default;
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             object actual = sut.GetDictionaryValue("some random text that is not a key in the dictionary");
 
-            actual.Should().BeOfType<char>();
+            actual.Should().BeOfType<int>();
             actual.Should().Be(expected);
         }
 
         [Fact]
         public void ItReturnsValueFromDictionaryWhenKeyExists()
         {
-            const char expected = 'H';
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            const int expected = 10056;
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
-            object actual = sut.GetDictionaryValue("Mand");
+            object actual = sut.GetDictionaryValue("t-shirts");
 
-            actual.Should().BeOfType<char>();
+            actual.Should().BeOfType<int>();
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void ItSaysFalseWhenAskedIfFilterIsAnythingOtherThanGenderFilter()
+        public void ItSaysFalseWhenAskedIfFilterIsAnythingOtherThanProductTypeFilter()
         {
             const bool expected = false;
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             bool actual = sut.IsFilterOfType(FilterType.SPARTOO_CURRENCY);
 
@@ -190,10 +190,10 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         }
 
         [Fact]
-        public void ItSaysFalseWhenAskedIfMapperIsAnythingOtherThanGenderMapper()
+        public void ItSaysFalseWhenAskedIfMapperIsAnythingOtherThanProductTypeMapper()
         {
             const bool expected = false;
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
             bool actual = sut.IsMapperOfType(MapType.SPARTOO_COLOUR);
 
@@ -201,23 +201,23 @@ namespace Fashionhero.Portal.BusinessLogic.Test.Spartoo
         }
 
         [Fact]
-        public void ItSaysTrueWhenAskedIfFilterIsGenderFilter()
+        public void ItSaysTrueWhenAskedIfFilterIsProductTypeFilter()
         {
             const bool expected = true;
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
-            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_GENDER);
+            bool actual = sut.IsFilterOfType(FilterType.SPARTOO_TYPE);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void ItSaysTrueWhenAskedIfMapperIsGenderMapper()
+        public void ItSaysTrueWhenAskedIfMapperIsProductTypeMapper()
         {
             const bool expected = true;
-            var sut = new GenderMappedFilter(mockedLogger.Object);
+            var sut = new ProductTypeMappedFilter(mockedLogger.Object);
 
-            bool actual = sut.IsMapperOfType(MapType.SPARTOO_GENDER);
+            bool actual = sut.IsMapperOfType(MapType.SPARTOO_TYPE);
 
             actual.Should().Be(expected);
         }
